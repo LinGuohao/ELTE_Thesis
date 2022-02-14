@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.guohaohome.moviedb.dao.InfoMapper">
+    <select id="getInfoByID" parameterType="String" resultType="com.guohaohome.moviedb.sqlEntity.Info">
+        select * from Info where ID = #{ID}
+    </select>
+
+    <update id="updateIMDbByID" >
+        update Info set IMDb  = #{newIMDb}
+            where ID = #{ID}
+    </update>
+
+    <update id="updateTomatoesByID">
+        update Info set Tomatoes = #{newTomatoes}
+            where ID = #{ID}
+    </update>
+
+    <insert id="insertInfo" parameterType="com.guohaohome.moviedb.sqlEntity.Info">
+        insert into Info (id,photo,review,OST,clips,details,IMDb,Tomatoes)
+                            values (#{id,jdbcType=VARCHAR},#{photo,jdbcType=VARCHAR}, #{review,jdbcType=VARCHAR},
+                                    #{OST,jdbcType=VARCHAR},#{clips,jdbcType=VARCHAR},#{details,jdbcType=VARCHAR},
+                                    #{IMDb,jdbcType = DOUBLE},#{Tomatoes,jdbcType = INTEGER})
+    </insert>
+</mapper>

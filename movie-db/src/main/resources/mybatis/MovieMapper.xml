@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.guohaohome.moviedb.dao.MovieMapper">
+    <insert id="insertMovie" parameterType="com.guohaohome.moviedb.sqlEntity.Movie">
+        insert into movie (id,name) values (#{id,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR})
+    </insert>
+
+    <select id="getNameByID" parameterType="String">
+        select name from movie where id = #{ID}
+    </select>
+
+    <select id="getIDByName" parameterType="String">
+        select ID from movie where name = #{name}
+    </select>
+</mapper>

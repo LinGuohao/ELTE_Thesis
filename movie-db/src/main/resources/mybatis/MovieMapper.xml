@@ -7,11 +7,19 @@
         insert into movie (id,name) values (#{id,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR})
     </insert>
 
-    <select id="getNameByID" parameterType="String">
+    <select id="getNameByID" parameterType="String" resultType="String">
         select name from movie where id = #{ID}
     </select>
 
-    <select id="getIDByName" parameterType="String">
+    <select id="getIDByName" parameterType="String" resultType="String">
         select ID from movie where name = #{name}
+    </select>
+
+    <select id="getAllID" resultType="java.lang.String">
+        select ID from movie
+    </select>
+
+    <select id="updateNameByID">
+        update movie set name = #{newName} where ID = #{ID}
     </select>
 </mapper>

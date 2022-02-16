@@ -18,10 +18,14 @@
             where ID = #{ID}
     </update>
 
+    <update id="updateInfoByID">
+        update Info set name = #{newInfo.name}, IMDb = #{newInfo.IMDb} , Tomatoes = #{newInfo.Tomatoes}
+            where ID = ${newInfo.ID}
+    </update>
+
     <insert id="insertInfo" parameterType="com.guohaohome.moviedb.sqlEntity.Info">
-        insert into Info (id,photo,review,OST,clips,details,IMDb,Tomatoes)
-                            values (#{id,jdbcType=VARCHAR},#{photo,jdbcType=VARCHAR}, #{review,jdbcType=VARCHAR},
-                                    #{OST,jdbcType=VARCHAR},#{clips,jdbcType=VARCHAR},#{details,jdbcType=VARCHAR},
+        insert into Info (id,name,IMDb,Tomatoes)
+                            values (#{id,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR},
                                     #{IMDb,jdbcType = DOUBLE},#{Tomatoes,jdbcType = INTEGER})
     </insert>
 </mapper>

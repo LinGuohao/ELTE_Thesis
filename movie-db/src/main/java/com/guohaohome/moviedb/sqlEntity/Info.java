@@ -2,22 +2,13 @@ package com.guohaohome.moviedb.sqlEntity;
 
 public class Info {
     private String id;
-    private String photo;
-    private String review;
-    private String OST;
-    private String clips;
-    private String Details;
+    private String name;
     private double IMDb;
     private int Tomatoes;
 
-    public Info(String id, String photo, String review, String OST, String clips,
-                String details, double IMDb, int tomatoes) {
+    public Info(String id, String name, double IMDb, int tomatoes) {
         this.id = id;
-        this.photo = photo;
-        this.review = review;
-        this.OST = OST;
-        this.clips = clips;
-        Details = details;
+        this.name = name;
         this.IMDb = IMDb;
         Tomatoes = tomatoes;
     }
@@ -26,44 +17,16 @@ public class Info {
         return id;
     }
 
-    public String getPhoto() {
-        return photo;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public void setPhoto(String photo) {
-        this.photo = photo;
+    public String getName() {
+        return name;
     }
 
-    public String getReview() {
-        return review;
-    }
-
-    public void setReview(String review) {
-        this.review = review;
-    }
-
-    public String getOST() {
-        return OST;
-    }
-
-    public void setOST(String OST) {
-        this.OST = OST;
-    }
-
-    public String getClips() {
-        return clips;
-    }
-
-    public void setClips(String clips) {
-        this.clips = clips;
-    }
-
-    public String getDetails() {
-        return Details;
-    }
-
-    public void setDetails(String details) {
-        Details = details;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public double getIMDb() {

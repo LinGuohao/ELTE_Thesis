@@ -2,6 +2,7 @@ package com.guohaohome.moviedb.sqlApiTest;
 
 
 import com.guohaohome.moviedb.dao.InfoMapper;
+import com.guohaohome.moviedb.dao.MovieMapper;
 import com.guohaohome.moviedb.sqlEntity.Info;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -26,52 +27,53 @@ public class InfoMapperTester {
     @Test
     public void testGetInfoByID() {
         Info info = infoMapper.getInfoByID("12345");
-        assertEquals("photo/12345", info.getPhoto());
-        assertEquals("review/12345", info.getReview());
-        assertEquals("OST/12345", info.getOST());
-        assertEquals("clips/12345", info.getClips());
-        assertEquals("details/12345", info.getDetails());
+        assertEquals("testGetInfoByID",info.getName());
         assertEquals(9.0, info.getIMDb(), 0.1);
         assertEquals(90, info.getTomatoes());
     }
 
     @Test
     public void testUpdateIMDbByID() {
-        double currentIMDb = infoMapper.getInfoByID("12345").getIMDb();
-        infoMapper.updateIMDbByID("12345", 9.8);
-        double updatedIMDbByID = infoMapper.getInfoByID("12345").getIMDb();
+        double currentIMDb = infoMapper.getInfoByID("12345678").getIMDb();
+        infoMapper.updateIMDbByID("12345678", 9.8);
+        double updatedIMDbByID = infoMapper.getInfoByID("12345678").getIMDb();
         assertEquals(9.8, updatedIMDbByID, 0.1);
     }
 
     @Test
     public void testUpdateTomatoesByID() {
-        int currentTomatoes = infoMapper.getInfoByID("12345").getTomatoes();
-        infoMapper.updateTomatoesByID("12345", 95);
-        int updatedTomatoes = infoMapper.getInfoByID("12345").getTomatoes();
+        int currentTomatoes = infoMapper.getInfoByID("12345678").getTomatoes();
+        infoMapper.updateTomatoesByID("12345678", 95);
+        int updatedTomatoes = infoMapper.getInfoByID("12345678").getTomatoes();
         assertEquals(95, updatedTomatoes);
     }
 
     @Test
     public void testInsertInfo(){
         String id = "123456";
-        String photo = "photo/123456";
-        String review = "review/123456";
-        String OST =  "OST/123456";
-        String clips = "clips/123456";
-        String details = "details/12345";
-        double IMDb = 9.2;
-        int Tomatoes = 92;
-        Info info = new Info(id,photo,review,OST,clips,details,IMDb,Tomatoes);
+        String name = "infoMapper_testInsertInfo";
+        double IMDb = 9.5;
+        int Tomatoes = 93;
+        Info info = new Info(id,name,IMDb,Tomatoes);
         infoMapper.insertInfo(info);
         Info testInfo = infoMapper.getInfoByID("123456");
-        assertEquals(photo, testInfo.getPhoto());
-        assertEquals(review, testInfo.getReview());
-        assertEquals(OST, testInfo.getOST());
-        assertEquals(clips, testInfo.getClips());
-        assertEquals(details, testInfo.getDetails());
+        assertEquals(name,testInfo.getName());
         assertEquals(IMDb, info.getIMDb(), 0.1);
         assertEquals(Tomatoes, info.getTomatoes());
-
+    }
+    @Test
+    public void testUpdateInfo()
+    {
+        String id = "1234567";
+        String name = "testUpdateInfo";
+        double IMDb = 9.3;
+        int Tomatoes = 93;
+        Info info = new Info(id,name,IMDb,Tomatoes);
+        infoMapper.updateInfoByID(info,id);
+        Info testInfo = infoMapper.getInfoByID("1234567");
+        assertEquals(name,testInfo.getName());
+        assertEquals(IMDb,testInfo.getIMDb(),0.1);
+        assertEquals(Tomatoes,testInfo.getTomatoes());
     }
 }
 

@@ -33,6 +33,7 @@
 </template>
 
 <script>
+import MoviedbServiceClient from "E:/Thesis/repo/movie-collection/movie-web/src/protoc/moviedb_grpc_web_pb"
 export default {
   name: "HomePage",
 
@@ -47,8 +48,12 @@ export default {
     ],
     drawer: null,
     numberOfID: 10,
-    movies: [{}]
-    
+    movies: [{}],
+    testData: process.env.VUE_APP_ENV
   }),
+
+  created: function(){
+    this.client = new MoviedbServiceClient("http://localhost:9080", null, null);
+  }
 };
 </script>

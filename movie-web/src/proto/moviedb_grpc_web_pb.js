@@ -83,7 +83,7 @@ proto.com.guohaohome.moviedb.proto.MoviedbServicePromiseClient =
  */
 const methodDescriptor_MoviedbService_GetAllID = new grpc.web.MethodDescriptor(
   '/com.guohaohome.moviedb.proto.MoviedbService/GetAllID',
-  grpc.web.MethodType.SERVER_STREAMING,
+  grpc.web.MethodType.UNARY,
   google_protobuf_empty_pb.Empty,
   proto.com.guohaohome.moviedb.proto.AllMovieIDListResponse,
   /**
@@ -98,32 +98,37 @@ const methodDescriptor_MoviedbService_GetAllID = new grpc.web.MethodDescriptor(
 
 
 /**
- * @param {!proto.google.protobuf.Empty} request The request proto
- * @param {?Object<string, string>=} metadata User defined
+ * @param {!proto.google.protobuf.Empty} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @return {!grpc.web.ClientReadableStream<!proto.com.guohaohome.moviedb.proto.AllMovieIDListResponse>}
+ * @param {function(?grpc.web.RpcError, ?proto.com.guohaohome.moviedb.proto.AllMovieIDListResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.com.guohaohome.moviedb.proto.AllMovieIDListResponse>|undefined}
  *     The XHR Node Readable Stream
  */
 proto.com.guohaohome.moviedb.proto.MoviedbServiceClient.prototype.getAllID =
-    function(request, metadata) {
-  return this.client_.serverStreaming(this.hostname_ +
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
       '/com.guohaohome.moviedb.proto.MoviedbService/GetAllID',
       request,
       metadata || {},
-      methodDescriptor_MoviedbService_GetAllID);
+      methodDescriptor_MoviedbService_GetAllID,
+      callback);
 };
 
 
 /**
- * @param {!proto.google.protobuf.Empty} request The request proto
+ * @param {!proto.google.protobuf.Empty} request The
+ *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
- * @return {!grpc.web.ClientReadableStream<!proto.com.guohaohome.moviedb.proto.AllMovieIDListResponse>}
- *     The XHR Node Readable Stream
+ * @return {!Promise<!proto.com.guohaohome.moviedb.proto.AllMovieIDListResponse>}
+ *     Promise that resolves to the response
  */
 proto.com.guohaohome.moviedb.proto.MoviedbServicePromiseClient.prototype.getAllID =
     function(request, metadata) {
-  return this.client_.serverStreaming(this.hostname_ +
+  return this.client_.unaryCall(this.hostname_ +
       '/com.guohaohome.moviedb.proto.MoviedbService/GetAllID',
       request,
       metadata || {},

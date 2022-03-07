@@ -1,27 +1,26 @@
 <template>
   <v-container>
-    <v-row>   
-      <v-col v-for="n in movies" :key="n" cols="4">
-        {{getInfo(n)}}
+    <v-row v-if="info.length== movies.length">
+      <v-col v-for="(n, index) in movies" :key="index" cols="4">
         <v-card height="400" class="mx-auto" elevation="10">
           <v-img
             class="white--text align-end"
             height="200px"
-            src="https://cdn.vuetifyjs.com/images/cards/docks.jpg"
+            :src= "cover[index]"
           >
-            <v-card-title>test</v-card-title>
+            <v-card-title>{{info[index][1]}}</v-card-title>
           </v-img>
 
           <v-card-subtitle class="pb-0"> Director and Actors: </v-card-subtitle>
 
           <v-card-text class="text--primary pb-0">
-            <div>Director name</div>
-            <div>演员名字</div>
+            <div>{{ n.director }}</div>
+            <div>{{ n.actors }}</div>
           </v-card-text>
 
           <v-card-subtitle class="pb-0"> Rating: </v-card-subtitle>
           <v-card-text class="text--primary pb-0">
-            <div>IMDb: {{this.info.IMDb}} 烂番茄: 100</div>
+            <div>IMDb: {{info[index][2]}} Rotten Tomatoes: {{info[index][3]}}</div>
           </v-card-text>
 
           <v-card-actions>
@@ -55,8 +54,8 @@ export default {
     drawer: null,
     numberOfID: 10,
     movies: [],
-    infoJson: null,
-    info: null,
+    info: [],
+    cover:[],
   }),
 
   created: function () {
@@ -70,16 +69,27 @@ export default {
         new google_protobuf_empty_pb.Empty(),
         {},
         (err, response) => {
-          this.movies = response.toObject().replyList.map((x) => x.id);
-          console.log(this.movies);
+          let pList = [];
+          let ret = response.toObject().replyList;
+          ret.forEach((element) => {
+            pList.push(this.getInfoJson(element.id));
+            this.getInfo(element.id);
+            this.cover.push(this.prefix + element.id + "/cover.jpg");
+            //console.log(this.info);
+          });
+          Promise.all(pList).then((res) => {
+            this.movies = res.map((item) => item.data);
+            //console.log(this.movies);
+          });
         }
       );
     },
 
-      getInfoJson(id) {
-         this.$axios.get(this.prefix + id + "/info.json").then((res) => {
-         this.infoJson = res;
-        console.log(this.infoJson);
+    getInfoJson(id) {
+      return new Promise((reslove) => {
+        this.$axios.get(this.prefix + id + "/info.json").then((res) => {
+          reslove(res);
+        });
       });
     },
 
@@ -88,10 +98,10 @@ export default {
         new InfoByIDRequest().setId(id),
         {},
         (err, response) => {
-          this.info = response.toObject();
+          //console.log(response.array);
+          this.info.push(response.array)
         }
       );
-      return this.response;
     },
   },
 };

@@ -1,14 +1,14 @@
 <template>
   <v-container>
-    <v-row v-if="info.length== movies.length">
+    <v-row v-if="info.length == movies.length">
       <v-col v-for="(n, index) in movies" :key="index" cols="4">
         <v-card height="400" class="mx-auto" elevation="10">
           <v-img
             class="white--text align-end"
             height="200px"
-            :src= "cover[index]"
+            :src="cover[index]"
           >
-            <v-card-title>{{info[index][1]}}</v-card-title>
+            <v-card-title>{{ info[index][1] }}</v-card-title>
           </v-img>
 
           <v-card-subtitle class="pb-0"> Director and Actors: </v-card-subtitle>
@@ -20,11 +20,13 @@
 
           <v-card-subtitle class="pb-0"> Rating: </v-card-subtitle>
           <v-card-text class="text--primary pb-0">
-            <div>IMDb: {{info[index][2]}} Rotten Tomatoes: {{info[index][3]}}</div>
+            <div>
+              IMDb: {{ info[index][2] }} Rotten Tomatoes: {{ info[index][3] }}
+            </div>
           </v-card-text>
 
           <v-card-actions>
-            <v-btn color="orange" text> See more </v-btn>
+            <v-btn color="orange" @click="goDetail(info[index][0])"> See more </v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -44,18 +46,10 @@ export default {
   data: () => ({
     prefix: "",
     items: [{ title: "Home" }],
-    cards: ["Today"],
-    links: [
-      ["mdi-inbox-arrow-down", "Inbox"],
-      ["mdi-send", "Send"],
-      ["mdi-delete", "Trash"],
-      ["mdi-alert-octagon", "Spam"],
-    ],
     drawer: null,
-    numberOfID: 10,
     movies: [],
     info: [],
-    cover:[],
+    cover: [],
   }),
 
   created: function () {
@@ -99,9 +93,18 @@ export default {
         {},
         (err, response) => {
           //console.log(response.array);
-          this.info.push(response.array)
+          this.info.push(response.array);
         }
       );
+    },
+    goDetail(mId) {
+      //console.log(this.$router);
+      this.$router.push({
+        path: "/detail",
+        query: {
+          id: mId,
+        },
+      });
     },
   },
 };

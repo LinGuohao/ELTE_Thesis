@@ -18,7 +18,9 @@
         </v-list-item>
         <v-list-item v-for="item in items" :key="item.title" link>
           <v-list-item-content>
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
+            <v-list-item-title @click="goHome()">{{
+              item.title
+            }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -31,13 +33,13 @@
     </v-navigation-drawer>
 
     <v-main class="grey lighten-2">
-        <home/>
+      <router-view><home /></router-view>
     </v-main>
   </v-app>
 </template>
 
 <script>
-import Home from './components/HomePage.vue';
+import Home from "./components/HomePage.vue";
 export default {
   components: { Home },
   name: "App",
@@ -51,8 +53,16 @@ export default {
       ["mdi-delete", "Trash"],
       ["mdi-alert-octagon", "Spam"],
     ],
-
-    
   }),
+
+  methods: {
+    goHome() {
+      this.$router
+        .push({
+          path: "/",
+        })
+        .catch((err) => err);
+    },
+  },
 };
 </script>

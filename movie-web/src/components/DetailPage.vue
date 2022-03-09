@@ -1,16 +1,16 @@
 <template>
   <v-container>
-    <h1>{{info[1]}}</h1>
+    <h1>{{ info[1] }}</h1>
     <v-carousel
       cycle
       height="500"
       hide-delimiter-background
       show-arrows-on-hover
     >
-      <v-carousel-item v-for="(slide, i) in slides" :key="i">
-        <v-sheet :color="colors[i]" height="100%">
+      <v-carousel-item v-for="(file, i) in files" :key="i">
+        <v-sheet height="100%">
           <v-row class="fill-height" align="center" justify="center">
-            <div class="text-h2">{{ slide }} Slide</div>
+            <v-img src= ""></v-img>
           </v-row>
         </v-sheet>
       </v-carousel-item>
@@ -25,16 +25,11 @@ import { MoviedbServiceClient } from "@/proto/moviedb_grpc_web_pb.js";
 import { InfoByIDRequest } from "@/proto/moviedb_pb.js";
 export default {
   name: "DetailPage",
+  
   data: () => ({
+    prefix: "/public" ,
     info: [],
-    colors: [
-      "indigo",
-      "warning",
-      "pink darken-2",
-      "red lighten-1",
-      "deep-purple accent-4",
-    ],
-    slides: ["First", "Second", "Third", "Fourth", "Fifth"],
+    files: [],
   }),
 
   created: function () {
@@ -59,7 +54,8 @@ export default {
   },
 
   mounted() {
-    console.log(this.$route);
+     this.files = require.context('../../public/12345/screenshot', false,).keys();
+     console.log(this.files, '---');
   },
 };
 </script>

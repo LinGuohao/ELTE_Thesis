@@ -33,7 +33,7 @@
     </v-navigation-drawer>
 
     <v-main class="grey lighten-2">
-      <router-view><home /></router-view>
+      <router-view :key="$route.fullPath"><home /></router-view>
     </v-main>
   </v-app>
 </template>

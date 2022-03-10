@@ -6,7 +6,7 @@
           <v-img
             class="white--text align-end"
             height="200px"
-            :src="cover[index]"
+            :src="covers[index]"
           >
             <v-card-title>{{ info[index][1] }}</v-card-title>
           </v-img>
@@ -26,7 +26,9 @@
           </v-card-text>
 
           <v-card-actions>
-            <v-btn color="orange" @click="goDetail(info[index][0])"> See more </v-btn>
+            <v-btn color="orange" @click="goDetail(info[index][0])">
+              See more
+            </v-btn>
           </v-card-actions>
         </v-card>
       </v-col>
@@ -45,11 +47,12 @@ export default {
 
   data: () => ({
     prefix: "",
+    ossPrefix: "https://movie-db.oss-eu-west-1.aliyuncs.com/",
     items: [{ title: "Home" }],
     drawer: null,
     movies: [],
     info: [],
-    cover: [],
+    covers: [],
   }),
 
   created: function () {
@@ -64,37 +67,45 @@ export default {
         {},
         (err, response) => {
           let pList = [];
+          let infoList = [];
           let ret = response.toObject().replyList;
           ret.forEach((element) => {
             pList.push(this.getInfoJson(element.id));
-            this.getInfo(element.id);
-            this.cover.push(this.prefix + element.id + "/cover.jpg");
-            //console.log(this.info);
+            infoList.push(this.getInfo(element.id));
+            this.covers.push(this.ossPrefix + element.id + "/cover.jpg");
           });
           Promise.all(pList).then((res) => {
             this.movies = res.map((item) => item.data);
             //console.log(this.movies);
           });
+          Promise.all(infoList).then((res) =>{
+            this.info = res.map((item) => item);
+          })
         }
       );
     },
 
     getInfoJson(id) {
       return new Promise((reslove) => {
-        this.$axios.get(this.prefix + id + "/info.json").then((res) => {
+        this.$axios.get(this.ossPrefix + id + "/info.json").then((res) => {
           reslove(res);
         });
       });
     },
 
     getInfo(id) {
-      this.client.getInfoByID(
-        new InfoByIDRequest().setId(id),
-        {},
-        (err, response) => {
-          //console.log(response.array);
-          this.info.push(response.array);
-        }
+      return new Promise((reslove) =>
+        this.client.getInfoByID(
+          new InfoByIDRequest().setId(id),
+          {},
+          (err, response) => {
+            reslove(response.array);
+            //console.log(response.array);
+            //this.info.push(response.array);
+
+            //console.log(this.info);
+          }
+        )
       );
     },
     goDetail(mId) {

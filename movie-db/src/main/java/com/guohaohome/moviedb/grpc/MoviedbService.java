@@ -1,6 +1,11 @@
 package com.guohaohome.moviedb.grpc;
+import com.aliyun.oss.OSS;
+import com.aliyun.oss.OSSClient;
+import com.aliyun.oss.model.ListObjectsV2Result;
+import com.aliyun.oss.model.OSSObjectSummary;
 import com.guohaohome.moviedb.dao.InfoMapper;
 import com.guohaohome.moviedb.dao.MovieMapper;
+import com.guohaohome.moviedb.ossClient.OSSConfiguration;
 import com.guohaohome.moviedb.proto.*;
 import com.guohaohome.moviedb.sqlEntity.Info;
 import com.guohaohome.moviedb.sqlEntity.Movie;
@@ -20,6 +25,10 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
         MovieMapper movieMapper;
         @Autowired
         InfoMapper infoMapper;
+        @Autowired
+        OSS ossClient;
+        @Autowired
+        OSSConfiguration ossConfiguration;
         @Override
         public void getAllID (com.google.protobuf.Empty request,
                               StreamObserver<AllMovieIDListResponse> responseObserver){
@@ -55,6 +64,20 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
                 Info info = new Info(request.getId(),request.getName(),request.getIMDb(),request.getTomatoes());
                 infoMapper.insertInfo(info);
                 movieMapper.insertMovie(new Movie(info.getId(),info.getName()));
+
+        }
+        @Override
+        public void getOssObjectList(ObjectListRequest request,StreamObserver<ObjectListResponse> responseObserver){
+                ListObjectsV2Result result = ossClient.listObjectsV2(request.getBucketName(),request.getKeyPrefix());
+                List<OSSObjectSummary> ossObjectSummaries = result.getObjectSummaries();
+                ObjectListResponse.Builder builder = ObjectListResponse.newBuilder();
+                for (OSSObjectSummary s : ossObjectSummaries) {
+                        builder.addReply(ObjectList.newBuilder().setObjectName(s.getKey()));
+
+                }
+                ObjectListResponse response = builder.build();
+                responseObserver.onNext(response);
+                responseObserver.onCompleted();
 
         }
 }

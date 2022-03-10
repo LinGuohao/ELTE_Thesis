@@ -8,3 +8,9 @@ mybatis:
   mapper-locations: classpath:mybatis/*.xml
 server:
   port: 8888
+
+aliyun:
+  endpoint: oss-eu-west-1.aliyuncs.com
+  accessKeyId: LTAI5tLGTNLk9oDuRfty5Qta
+  accessKeySecret: xfn8jzOzI5SQ6H1p2vmDoOSdmChUti
+  bucket: movie-db

@@ -7,10 +7,10 @@
       hide-delimiter-background
       show-arrows-on-hover
     >
-      <v-carousel-item v-for="(file, i) in files" :key="i">
+      <v-carousel-item v-for="(image, index) in images" :key="index">
         <v-sheet height="100%">
           <v-row class="fill-height" align="center" justify="center">
-            <v-img src= ""></v-img>
+            <v-img :src= "image"></v-img>
           </v-row>
         </v-sheet>
       </v-carousel-item>
@@ -21,20 +21,21 @@
 
 
 <script>
-import { MoviedbServiceClient } from "@/proto/moviedb_grpc_web_pb.js";
-import { InfoByIDRequest } from "@/proto/moviedb_pb.js";
+import { InfoByIDRequest, ObjectListRequest } from "@/proto/moviedb_pb.js";
 export default {
   name: "DetailPage",
-  
+
   data: () => ({
-    prefix: "/public" ,
+    prefix: "/public",
+    ossPrefix:"https://movie-db.oss-eu-west-1.aliyuncs.com/",
     info: [],
     files: [],
+    images:[],
   }),
 
   created: function () {
-    this.client = new MoviedbServiceClient("http://localhost:9080", null, null);
     this.init();
+    this.getAllImages();
   },
   methods: {
     init() {
@@ -42,7 +43,7 @@ export default {
     },
 
     getInfo() {
-      this.client.getInfoByID(
+      this.$backend.getInfoByID(
         new InfoByIDRequest().setId(this.$route.query.id),
         {},
         (err, response) => {
@@ -51,11 +52,19 @@ export default {
         }
       );
     },
-  },
 
-  mounted() {
-     this.files = require.context('../../public/12345/screenshot', false,).keys();
-     console.log(this.files, '---');
+    getAllImages() {
+      this.$backend.getOssObjectList(
+        new ObjectListRequest()
+          .setBucketname("movie-db")
+          .setKeyprefix(this.$route.query.id + "/screenshot"),
+        {},
+        (err, response) => {
+         console.log(response.array[0]);
+         this.images = response.array[0].map((elment)=>this.ossPrefix+(elment[0]));
+        }
+      );
+    },
   },
 };
 </script>

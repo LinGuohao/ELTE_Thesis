@@ -6,7 +6,6 @@ import "google/protobuf/empty.proto";
 
 message MovieID{
   string id = 1;
-
 }
 
 message AllMovieIDListResponse{
@@ -30,10 +29,24 @@ message InfoRequest{
   int32 Tomatoes = 4;
 }
 
+message ObjectList{
+  string ObjectName = 1;
+}
+
+message ObjectListRequest{
+  string bucketName = 1;
+  string keyPrefix = 2;
+
+}
+
+message ObjectListResponse{
+  repeated ObjectList reply = 1;
+}
 
 service MoviedbService{
   rpc GetAllID (google.protobuf.Empty) returns (AllMovieIDListResponse){}
   rpc GetInfoByID(InfoByIDRequest) returns (InfoResponse) {}
   rpc UpdateByID(InfoRequest) returns (google.protobuf.Empty){}
   rpc InsertMovie(InfoRequest) returns (google.protobuf.Empty){}
+  rpc GetOssObjectList(ObjectListRequest) returns(ObjectListResponse){}
 }

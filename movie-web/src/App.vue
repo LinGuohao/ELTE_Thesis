@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar app>
+    <v-app-bar app class="grey darken-4 white--text">
       <v-toolbar-title> Home </v-toolbar-title>
       <v-spacer></v-spacer>
 
@@ -8,16 +8,16 @@
         <v-icon>mdi-magnify</v-icon>
       </v-btn>
     </v-app-bar>
-    <v-navigation-drawer app class="blue-grey darken-1">
+    <v-navigation-drawer app class="grey darken-4">
       <v-divider></v-divider>
       <v-list nav>
         <v-list-item>
           <v-list-item-content>
-            <v-list-item-title class="text-h6"> Log In </v-list-item-title>
+            <v-list-item-title class="text-h6 white--text"> Log In </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <v-list-item v-for="item in items" :key="item.title" link>
-          <v-list-item-content>
+          <v-list-item-content class="white--text">
             <v-list-item-title @click="goHome()">{{
               item.title
             }}</v-list-item-title>
@@ -32,7 +32,7 @@
       </template>
     </v-navigation-drawer>
 
-    <v-main class="grey lighten-2">
+    <v-main class="blue-grey darken-4 white--text">
       <router-view :key="$route.fullPath"><home /></router-view>
     </v-main>
   </v-app>

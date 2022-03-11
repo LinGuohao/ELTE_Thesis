@@ -12,7 +12,7 @@ const router = new VueRouter({
       component: HomePage,
     },
     {
-      path: "/detail",
+      path: '/detail',
       name: "DetailPage",
       component: DetailPage,
     }

@@ -4,10 +4,12 @@ import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.model.ListObjectsV2Result;
 import com.aliyun.oss.model.OSSObjectSummary;
 import com.guohaohome.moviedb.dao.InfoMapper;
+import com.guohaohome.moviedb.dao.LineMapper;
 import com.guohaohome.moviedb.dao.MovieMapper;
 import com.guohaohome.moviedb.ossClient.OSSConfiguration;
 import com.guohaohome.moviedb.proto.*;
 import com.guohaohome.moviedb.sqlEntity.Info;
+import com.guohaohome.moviedb.sqlEntity.Line;
 import com.guohaohome.moviedb.sqlEntity.Movie;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
@@ -25,6 +27,8 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
         MovieMapper movieMapper;
         @Autowired
         InfoMapper infoMapper;
+        @Autowired
+        LineMapper lineMapper;
         @Autowired
         OSS ossClient;
         @Autowired
@@ -78,6 +82,21 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
                 ObjectListResponse response = builder.build();
                 responseObserver.onNext(response);
                 responseObserver.onCompleted();
+
+        }
+
+        @Override
+        public void getLines(InfoByIDRequest request, StreamObserver<LineListResponse> responseObserver){
+                LineListResponse.Builder builder = LineListResponse.newBuilder();
+                List<Line> lines = lineMapper.getLines(request.getId());
+                for (Line line : lines){
+                        builder.addReply(LineList.newBuilder().setId(line.getId()).setSentence(line.getSentence())
+                                .setAuthor(line.getAuthor()));
+                }
+                LineListResponse response = builder.build();
+                responseObserver.onNext(response);
+                responseObserver.onCompleted();
+
 
         }
 }

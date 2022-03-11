@@ -380,5 +380,66 @@ proto.com.guohaohome.moviedb.proto.MoviedbServicePromiseClient.prototype.getOssO
 };
 
 
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.com.guohaohome.moviedb.proto.InfoByIDRequest,
+ *   !proto.com.guohaohome.moviedb.proto.LineListResponse>}
+ */
+const methodDescriptor_MoviedbService_GetLines = new grpc.web.MethodDescriptor(
+  '/com.guohaohome.moviedb.proto.MoviedbService/GetLines',
+  grpc.web.MethodType.UNARY,
+  proto.com.guohaohome.moviedb.proto.InfoByIDRequest,
+  proto.com.guohaohome.moviedb.proto.LineListResponse,
+  /**
+   * @param {!proto.com.guohaohome.moviedb.proto.InfoByIDRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.com.guohaohome.moviedb.proto.LineListResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.com.guohaohome.moviedb.proto.InfoByIDRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.com.guohaohome.moviedb.proto.LineListResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.com.guohaohome.moviedb.proto.LineListResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.com.guohaohome.moviedb.proto.MoviedbServiceClient.prototype.getLines =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/com.guohaohome.moviedb.proto.MoviedbService/GetLines',
+      request,
+      metadata || {},
+      methodDescriptor_MoviedbService_GetLines,
+      callback);
+};
+
+
+/**
+ * @param {!proto.com.guohaohome.moviedb.proto.InfoByIDRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.com.guohaohome.moviedb.proto.LineListResponse>}
+ *     Promise that resolves to the response
+ */
+proto.com.guohaohome.moviedb.proto.MoviedbServicePromiseClient.prototype.getLines =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/com.guohaohome.moviedb.proto.MoviedbService/GetLines',
+      request,
+      metadata || {},
+      methodDescriptor_MoviedbService_GetLines);
+};
+
+
 module.exports = proto.com.guohaohome.moviedb.proto;
 

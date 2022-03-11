@@ -13,3 +13,10 @@ create table info (
       IMDb  DOUBLE,
       Tomatoes int
 );
+
+drop table if exists Lines;
+CREATE table Lines{
+    id varchar(255),
+    sentence varchar(1000),
+    author varchar(50)
+}

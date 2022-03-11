@@ -43,10 +43,21 @@ message ObjectListResponse{
   repeated ObjectList reply = 1;
 }
 
+message LineList{
+  string id=1;
+  string sentence=2;
+  string author=3;
+}
+
+message LineListResponse{
+  repeated LineList reply = 1;
+}
+
 service MoviedbService{
   rpc GetAllID (google.protobuf.Empty) returns (AllMovieIDListResponse){}
   rpc GetInfoByID(InfoByIDRequest) returns (InfoResponse) {}
   rpc UpdateByID(InfoRequest) returns (google.protobuf.Empty){}
   rpc InsertMovie(InfoRequest) returns (google.protobuf.Empty){}
   rpc GetOssObjectList(ObjectListRequest) returns(ObjectListResponse){}
+  rpc GetLines(InfoByIDRequest) returns(LineListResponse){}
 }

@@ -1,16 +1,18 @@
 <template>
-  <v-card color="pink darken-3" dark flat  outlined shaped>
+  <v-card color="pink darken-3" dark flat outlined shaped>
     <v-window v-model="onboarding">
       <v-window-item v-for="n in length" :key="`card-${n}`">
         <v-card color="transparent" height="200">
           <v-row class="fill-height" align="center" justify="center">
-            <v-card-text class="text-center" style="font-family: Times New Roman">
-              Transparent themed, for background-imaged slides. Background color
-              black added for demonstration purposes.
-               <v-card-text class="text-center font-italic font-weight-light">Subheader</v-card-text>
+            <v-card-text
+              class="text-center"
+              style="font-family: Times New Roman"
+            >
+              {{lines[n-1][1]}}
+              <v-card-text class="text-center font-italic font-weight-light"
+                > {{lines[n-1][2]}}</v-card-text
+              >
             </v-card-text>
-           
-             
           </v-row>
         </v-card>
       </v-window-item>
@@ -39,12 +41,20 @@
 </template>
 
 <script>
+import { InfoByIDRequest } from "@/proto/moviedb_pb.js";
 export default {
   name: "MovieLines",
   data: () => ({
-    length: 3,
     onboarding: 0,
+    lines: [],
   }),
+  created: function () {
+    this.lines = this.$backend.getLines(
+      new InfoByIDRequest().setId(this.detailInfo[0]),
+      {},
+      (err, response) => {this.lines = response.array[0];console.log(this.lines); }
+    );
+  },
   methods: {
     next() {
       this.onboarding =
@@ -54,6 +64,14 @@ export default {
       this.onboarding =
         this.onboarding - 1 < 0 ? this.length - 1 : this.onboarding - 1;
     },
+  },
+  computed: {
+    detailInfo() {
+      return this.$store.state.detailInfo;
+    },
+    length(){
+      return this.lines.length
+    }
   },
 };
 </script>

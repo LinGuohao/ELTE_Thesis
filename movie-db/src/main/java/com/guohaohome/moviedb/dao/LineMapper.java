@@ -1,0 +1,9 @@
+package com.guohaohome.moviedb.dao;
+
+import com.guohaohome.moviedb.sqlEntity.Line;
+
+import java.util.List;
+
+public interface LineMapper {
+    List<Line> getLines(String ID);
+}

@@ -48,7 +48,7 @@ export default {
     onboarding: 0,
     lines: [],
   }),
-  created: function () {
+  mounted: function () {
     this.lines = this.$backend.getLines(
       new InfoByIDRequest().setId(this.detailInfo[0]),
       {},

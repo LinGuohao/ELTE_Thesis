@@ -8,7 +8,6 @@
         hide-delimiter-background
         show-arrows-on-hover
         delimiter-icon="mdi-minus"
-        
       >
         <v-carousel-item v-for="(image, index) in images" :key="index">
           <v-sheet height="100%">
@@ -21,11 +20,13 @@
     </v-row>
     <v-row v-if="start">
       <v-col cols="8">
-        <MovieLines/>
+        <MovieLines />
+        <v-col>
+          <DescriptionPage />
+        </v-col>
       </v-col>
-
       <v-col cols="4">
-        <DetailRight > </DetailRight>
+        <DetailRight> </DetailRight>
       </v-col>
     </v-row>
   </v-container>
@@ -37,8 +38,9 @@
 import { InfoByIDRequest, ObjectListRequest } from "@/proto/moviedb_pb.js";
 import DetailRight from "./DetailRight.vue";
 import MovieLines from "./MovieLines.vue";
+import DescriptionPage from "./DescriptionPage.vue";
 export default {
-  components : {DetailRight,MovieLines},
+  components: { DetailRight, MovieLines, DescriptionPage },
   name: "DetailPage",
 
   data: () => ({

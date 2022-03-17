@@ -53,6 +53,16 @@ message LineListResponse{
   repeated LineList reply = 1;
 }
 
+message MusicInfo{
+  string id = 1;
+  string address = 2;
+  string musicName = 3;
+  string artist = 4;
+}
+
+message MusicListResponse{
+  repeated MusicInfo reply = 1;
+}
 service MoviedbService{
   rpc GetAllID (google.protobuf.Empty) returns (AllMovieIDListResponse){}
   rpc GetInfoByID(InfoByIDRequest) returns (InfoResponse) {}
@@ -60,4 +70,5 @@ service MoviedbService{
   rpc InsertMovie(InfoRequest) returns (google.protobuf.Empty){}
   rpc GetOssObjectList(ObjectListRequest) returns(ObjectListResponse){}
   rpc GetLines(InfoByIDRequest) returns(LineListResponse){}
+  rpc GetMusics(InfoByIDRequest) returns(MusicListResponse){}
 }

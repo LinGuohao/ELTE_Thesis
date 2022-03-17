@@ -14,9 +14,9 @@ create table info (
       Tomatoes int
 );
 
-drop table if exists Lines;
-CREATE table Lines{
+drop table if exists movie_lines;
+create table movie_lines(
     id varchar(255),
     sentence varchar(1000),
     author varchar(50)
-}
+);

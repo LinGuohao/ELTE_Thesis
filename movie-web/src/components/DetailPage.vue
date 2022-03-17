@@ -27,6 +27,9 @@
       </v-col>
       <v-col cols="4">
         <DetailRight> </DetailRight>
+        <div class="mt-4">
+          <MusicComponent />
+        </div>
       </v-col>
     </v-row>
   </v-container>
@@ -39,8 +42,9 @@ import { InfoByIDRequest, ObjectListRequest } from "@/proto/moviedb_pb.js";
 import DetailRight from "./DetailRight.vue";
 import MovieLines from "./MovieLines.vue";
 import DescriptionPage from "./DescriptionPage.vue";
+import MusicComponent from "./MusicComponent.vue";
 export default {
-  components: { DetailRight, MovieLines, DescriptionPage },
+  components: { DetailRight, MovieLines, DescriptionPage, MusicComponent },
   name: "DetailPage",
 
   data: () => ({

@@ -1,6 +1,5 @@
 package com.guohaohome.moviedb.grpc;
 import com.aliyun.oss.OSS;
-import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.model.ListObjectsV2Result;
 import com.aliyun.oss.model.OSSObjectSummary;
 import com.guohaohome.moviedb.dao.InfoMapper;
@@ -98,5 +97,34 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
                 responseObserver.onCompleted();
 
 
+        }
+        @Override
+        public void getMusics(InfoByIDRequest request, StreamObserver<MusicListResponse> responseObserver){
+                MusicListResponse.Builder builder = MusicListResponse.newBuilder();
+                ListObjectsV2Result res = ossClient.listObjectsV2("movie-db",  request.getId() + "/OST");
+                List<OSSObjectSummary> ossObjectSummaries = res.getObjectSummaries();
+                for (OSSObjectSummary s : ossObjectSummaries) {
+                        String link = s.getKey();
+                        if(link.length() != 0) {
+                                String[] splitLink = link.split("/");
+                                String fullName = splitLink[splitLink.length-1];
+                                String [] result = generateMusicInformation(fullName);
+                                builder.addReply(MusicInfo.newBuilder().setId(request.getId()).setAddress(link).setMusicName(result[0]).setArtist(result[1]));
+                        }
+                }
+                MusicListResponse response = builder.build();
+                responseObserver.onNext(response);
+                responseObserver.onCompleted();
+        }
+        public String[] generateMusicInformation(String fullName){
+                String [] temp = fullName.split("\\.");
+                fullName = "";
+                for(int i=0;i<temp.length-1;i++){
+                        fullName = fullName.concat(temp[i]);
+                        if(i!= temp.length-2){
+                                fullName = fullName.concat(".");
+                        }
+                }
+                return fullName.split("_");
         }
 }

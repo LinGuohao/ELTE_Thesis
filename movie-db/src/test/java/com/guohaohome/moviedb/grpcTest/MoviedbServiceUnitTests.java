@@ -95,4 +95,18 @@ public class MoviedbServiceUnitTests {
         assertEquals("Grpc_Insert",infoMapper.getInfoByID("234567890_insert").getName());
         assertEquals("Grpc_Insert" , movieMapper.getNameByID("234567890_insert"));
     }
+    @Test
+    public void testSegmentation(){
+        String test = "Raindrops Keep Falling On My Head_B.J. Thomas.mp3";
+        String [] temp = test.split("\\.");
+        test = "";
+        for(int i=0;i<temp.length-1;i++){
+            test = test.concat(temp[i]);
+            if(i!= temp.length-2){
+                test = test.concat(".");
+            }
+        }
+        String[] result = test.split("_");
+        System.out.println(result[0] + result[1]);
+    }
 }

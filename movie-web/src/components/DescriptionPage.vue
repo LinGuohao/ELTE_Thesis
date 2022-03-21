@@ -4,6 +4,10 @@
       <h3>{{ title }}</h3>
       <div v-html="content.replace(/\n/g, '<br/>')"></div>
     </v-alert>
+
+    <v-alert border="top" color="red accent-1" elevation="2" v-if="noDescription">
+      <div v-html="content.replace(/\n/g, '<br/>')"></div>
+    </v-alert>
   </div>
 </template>
 
@@ -19,6 +23,7 @@ export default {
     title: null,
     content: null,
     start: false,
+    noDescription:false
   }),
 
   methods: {
@@ -32,6 +37,8 @@ export default {
           this.start = true;
         })
         .catch((error) => {
+          this.noDescription = true;
+          this.content = "No Infomation"
           console.log(error);
         });
     },

@@ -6,7 +6,8 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
     state: {
         detailInfo: [],
-        detailInfoJson: []
+        detailInfoJson: [],
+        userInfo:null
     },
 
     mutations: {

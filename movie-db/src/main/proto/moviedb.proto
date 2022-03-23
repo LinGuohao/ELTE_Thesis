@@ -63,6 +63,22 @@ message MusicInfo{
 message MusicListResponse{
   repeated MusicInfo reply = 1;
 }
+
+message UsernameRequest{
+  string username = 1;
+}
+
+message BooleanResponse{
+  int32 isTrue = 1;
+}
+
+message UserInfo{
+  string username = 1;
+  string password = 2;
+  string fullName = 3;
+  string roles = 4;
+}
+
 service MoviedbService{
   rpc GetAllID (google.protobuf.Empty) returns (AllMovieIDListResponse){}
   rpc GetInfoByID(InfoByIDRequest) returns (InfoResponse) {}
@@ -71,4 +87,7 @@ service MoviedbService{
   rpc GetOssObjectList(ObjectListRequest) returns(ObjectListResponse){}
   rpc GetLines(InfoByIDRequest) returns(LineListResponse){}
   rpc GetMusics(InfoByIDRequest) returns(MusicListResponse){}
+  rpc JudgeUsername(UsernameRequest) returns(BooleanResponse){}
+  rpc InsertUser(UserInfo) returns (BooleanResponse){}
+  rpc GetUserByUserName(UsernameRequest) returns (UserInfo){}
 }

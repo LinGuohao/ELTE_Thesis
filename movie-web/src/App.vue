@@ -13,21 +13,30 @@
       <v-list nav>
         <v-list-item>
           <v-list-item-content>
-            <v-list-item-title class="text-h6 white--text"> Log In </v-list-item-title>
+            <v-list-item-title class="text-h6 white--text">{{userName}}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item v-for="item in items" :key="item.title" link>
+        <v-list-item  link>
           <v-list-item-content class="white--text">
-            <v-list-item-title @click="goHome()">{{
-              item.title
-            }}</v-list-item-title>
+            <v-list-item-title @click="goHome()">
+              Home
+            </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-list-item  link>
+          <v-list-item-content class="white--text">
+            <v-list-item-title v-if="userInfo == null" @click="goSignUp()">
+              Sign up  
+            </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
 
       <template v-slot:append>
         <div class="pa-2">
-          <v-btn block> Logout </v-btn>
+          <v-btn block v-if="userInfo == null" @click="goLogin()"> Log In </v-btn>
+          <v-btn block v-else> LogOut </v-btn>
         </div>
       </template>
     </v-navigation-drawer>
@@ -63,6 +72,26 @@ export default {
         })
         .catch((err) => err);
     },
+    goSignUp(){
+      this.$router
+        .push({
+          path:"/signup",
+        }).catch((err)=>err)
+    }
   },
+
+  computed: {
+    userInfo() {
+      return this.$store.state.userInfo;
+    },
+
+    userName(){
+      if(this.userInfo == null){
+        return "Guest"
+      }else{
+        return this.userInfo.fullname
+      }
+    }
+  }
 };
 </script>

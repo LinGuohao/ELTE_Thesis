@@ -1,5 +1,6 @@
 import HomePage from "@/components/HomePage";
 import DetailPage from "@/components/DetailPage";
+import SignUpPage from "@/components/SignUpPage";
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 Vue.use(VueRouter)
@@ -15,6 +16,11 @@ const router = new VueRouter({
       path: '/detail',
       name: "DetailPage",
       component: DetailPage,
+    },
+    {
+      path:"/signup",
+      name: "SignUp",
+      component: SignUpPage,
     }
 
 

@@ -13,21 +13,21 @@
       <v-list nav>
         <v-list-item>
           <v-list-item-content>
-            <v-list-item-title class="text-h6 white--text">{{userName}}</v-list-item-title>
+            <v-list-item-title class="text-h6 white--text">{{
+              userName
+            }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item  link>
+        <v-list-item link>
           <v-list-item-content class="white--text">
-            <v-list-item-title @click="goHome()">
-              Home
-            </v-list-item-title>
+            <v-list-item-title @click="goHome()"> Home </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
 
-        <v-list-item  link>
+        <v-list-item link>
           <v-list-item-content class="white--text">
             <v-list-item-title v-if="userInfo == null" @click="goSignUp()">
-              Sign up  
+              Sign up
             </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
@@ -35,8 +35,10 @@
 
       <template v-slot:append>
         <div class="pa-2">
-          <v-btn block v-if="userInfo == null" @click="goLogin()"> Log In </v-btn>
-          <v-btn block v-else> LogOut </v-btn>
+          <v-btn block v-if="userInfo == null" @click="goLogin()">
+            Log In
+          </v-btn>
+          <v-btn block v-else @click="logOut()"> LogOut </v-btn>
         </div>
       </template>
     </v-navigation-drawer>
@@ -72,26 +74,44 @@ export default {
         })
         .catch((err) => err);
     },
-    goSignUp(){
+    goSignUp() {
       this.$router
         .push({
-          path:"/signup",
-        }).catch((err)=>err)
+          path: "/signup",
+        })
+        .catch((err) => err);
+    },
+    goLogin() {
+      this.$router.push({ path: "/login" }).catch((err) => err);
+    },
+     logOut(){
+       localStorage.removeItem('fullname');
+       localStorage.removeItem('username');
+       localStorage.removeItem('roles');
+       window.location.reload();
     }
+
   },
 
   computed: {
-    userInfo() {
-      return this.$store.state.userInfo;
+    
+    userInfo(){
+      if (localStorage.getItem('username') == null) {
+        return null;
+      } else{
+        return localStorage.getItem('username');
+      }
     },
 
-    userName(){
-      if(this.userInfo == null){
-        return "Guest"
-      }else{
-        return this.userInfo.fullname
+    userName() {
+      if (localStorage.getItem('username') == null) {
+        return "Guest";
+      } else {
+        return localStorage.getItem('fullname');
       }
-    }
-  }
+    },
+
+
+  },
 };
 </script>

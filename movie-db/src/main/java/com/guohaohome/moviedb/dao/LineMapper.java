@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface LineMapper {
     List<Line> getLines(String ID);
+    void insertLine(Line line);
 }

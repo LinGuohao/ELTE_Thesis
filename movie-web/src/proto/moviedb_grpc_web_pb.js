@@ -444,6 +444,67 @@ proto.com.guohaohome.moviedb.proto.MoviedbServicePromiseClient.prototype.getLine
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.com.guohaohome.moviedb.proto.LineList,
+ *   !proto.com.guohaohome.moviedb.proto.BooleanResponse>}
+ */
+const methodDescriptor_MoviedbService_InsertLine = new grpc.web.MethodDescriptor(
+  '/com.guohaohome.moviedb.proto.MoviedbService/InsertLine',
+  grpc.web.MethodType.UNARY,
+  proto.com.guohaohome.moviedb.proto.LineList,
+  proto.com.guohaohome.moviedb.proto.BooleanResponse,
+  /**
+   * @param {!proto.com.guohaohome.moviedb.proto.LineList} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.com.guohaohome.moviedb.proto.BooleanResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.com.guohaohome.moviedb.proto.LineList} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.com.guohaohome.moviedb.proto.BooleanResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.com.guohaohome.moviedb.proto.BooleanResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.com.guohaohome.moviedb.proto.MoviedbServiceClient.prototype.insertLine =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/com.guohaohome.moviedb.proto.MoviedbService/InsertLine',
+      request,
+      metadata || {},
+      methodDescriptor_MoviedbService_InsertLine,
+      callback);
+};
+
+
+/**
+ * @param {!proto.com.guohaohome.moviedb.proto.LineList} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.com.guohaohome.moviedb.proto.BooleanResponse>}
+ *     Promise that resolves to the response
+ */
+proto.com.guohaohome.moviedb.proto.MoviedbServicePromiseClient.prototype.insertLine =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/com.guohaohome.moviedb.proto.MoviedbService/InsertLine',
+      request,
+      metadata || {},
+      methodDescriptor_MoviedbService_InsertLine);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.com.guohaohome.moviedb.proto.InfoByIDRequest,
  *   !proto.com.guohaohome.moviedb.proto.MusicListResponse>}
  */
@@ -682,6 +743,67 @@ proto.com.guohaohome.moviedb.proto.MoviedbServicePromiseClient.prototype.getUser
       request,
       metadata || {},
       methodDescriptor_MoviedbService_GetUserByUserName);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.com.guohaohome.moviedb.proto.VerificationRequest,
+ *   !proto.com.guohaohome.moviedb.proto.UserInfo>}
+ */
+const methodDescriptor_MoviedbService_AuthenticateUser = new grpc.web.MethodDescriptor(
+  '/com.guohaohome.moviedb.proto.MoviedbService/AuthenticateUser',
+  grpc.web.MethodType.UNARY,
+  proto.com.guohaohome.moviedb.proto.VerificationRequest,
+  proto.com.guohaohome.moviedb.proto.UserInfo,
+  /**
+   * @param {!proto.com.guohaohome.moviedb.proto.VerificationRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.com.guohaohome.moviedb.proto.UserInfo.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.com.guohaohome.moviedb.proto.VerificationRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.com.guohaohome.moviedb.proto.UserInfo)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.com.guohaohome.moviedb.proto.UserInfo>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.com.guohaohome.moviedb.proto.MoviedbServiceClient.prototype.authenticateUser =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/com.guohaohome.moviedb.proto.MoviedbService/AuthenticateUser',
+      request,
+      metadata || {},
+      methodDescriptor_MoviedbService_AuthenticateUser,
+      callback);
+};
+
+
+/**
+ * @param {!proto.com.guohaohome.moviedb.proto.VerificationRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.com.guohaohome.moviedb.proto.UserInfo>}
+ *     Promise that resolves to the response
+ */
+proto.com.guohaohome.moviedb.proto.MoviedbServicePromiseClient.prototype.authenticateUser =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/com.guohaohome.moviedb.proto.MoviedbService/AuthenticateUser',
+      request,
+      metadata || {},
+      methodDescriptor_MoviedbService_AuthenticateUser);
 };
 
 

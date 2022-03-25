@@ -22,7 +22,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Random;
+
 
 @GrpcService
 @Transactional
@@ -115,13 +119,30 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
         List<Line> lines = lineMapper.getLines(request.getId());
         for (Line line : lines) {
             builder.addReply(LineList.newBuilder().setId(line.getId()).setSentence(line.getSentence())
-                    .setAuthor(line.getAuthor()));
+                    .setAuthor(line.getAuthor()).setLineID(line.getLine_id()));
         }
         LineListResponse response = builder.build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
 
 
+    }
+
+    @Override
+    public void insertLine(LineList request, StreamObserver<BooleanResponse> responseStreamObserver){
+        BooleanResponse.Builder builder = BooleanResponse.newBuilder();
+        int oldLength = lineMapper.getLines(request.getId()).size();
+        Line line = new Line(request.getId(),request.getSentence(),request.getAuthor(),generateId());
+        lineMapper.insertLine(line);
+        int Length = lineMapper.getLines(request.getId()).size();
+        if(oldLength+1 == Length){
+            builder.setIsTrue(1);
+        }else{
+            builder.setIsTrue(-1);
+        }
+        BooleanResponse response = builder.build();
+        responseStreamObserver.onNext(response);
+        responseStreamObserver.onCompleted();
     }
 
     @Override
@@ -186,6 +207,26 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
 
     }
 
+    @Override
+    public void authenticateUser(VerificationRequest verificationRequest, StreamObserver<UserInfo> streamObserver) {
+        UserInfo.Builder builder = UserInfo.newBuilder();
+        User user = userMapper.getUserByUserName(verificationRequest.getUsername());
+        if (user == null) {
+            builder.setUsername("null");
+        } else {
+            if (!SHA256Encryption(verificationRequest.getPassword()).equals(user.getPassword())) {
+                builder.setUsername("wrong");
+            } else {
+                builder.setUsername(user.getUserName()).setFullName(user.getFullName())
+                        .setPassword(user.getPassword()).setRoles(user.getRoles());
+            }
+        }
+        UserInfo response = builder.build();
+        streamObserver.onNext(response);
+        streamObserver.onCompleted();
+    }
+
+
     public String[] generateMusicInformation(String fullName) {
         String[] temp = fullName.split("\\.");
         fullName = "";
@@ -196,5 +237,13 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
             }
         }
         return fullName.split("_");
+    }
+
+    public String generateId(){
+        long time = Calendar.getInstance().getTimeInMillis();
+        Random r = new Random();
+        r.setSeed(time);
+        int randInt = r.nextInt(100000);
+        return String.valueOf(time) + String.valueOf(randInt);
     }
 }

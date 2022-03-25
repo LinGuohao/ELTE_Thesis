@@ -7,4 +7,9 @@
     <select id="getLines" parameterType="String" resultType = "com.guohaohome.moviedb.sqlEntity.Line">
         select * from movie_lines where id = #{ID}
     </select>
+
+    <insert id="insertLine" parameterType="com.guohaohome.moviedb.sqlEntity.Line">
+        insert into movie_lines (id,sentence,author,line_id) values(#{id,jdbcType=VARCHAR},#{sentence,jdbcType=VARCHAR}
+            ,#{author,jdbcType=VARCHAR},#{line_id,jdbcType=VARCHAR})
+    </insert>
 </mapper>

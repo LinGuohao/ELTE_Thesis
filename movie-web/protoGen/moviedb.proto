@@ -47,6 +47,7 @@ message LineList{
   string id=1;
   string sentence=2;
   string author=3;
+  string lineID=4;
 }
 
 message LineListResponse{
@@ -79,6 +80,12 @@ message UserInfo{
   string roles = 4;
 }
 
+message VerificationRequest{
+  string username = 1;
+  string password = 2;
+}
+
+
 service MoviedbService{
   rpc GetAllID (google.protobuf.Empty) returns (AllMovieIDListResponse){}
   rpc GetInfoByID(InfoByIDRequest) returns (InfoResponse) {}
@@ -86,8 +93,10 @@ service MoviedbService{
   rpc InsertMovie(InfoRequest) returns (google.protobuf.Empty){}
   rpc GetOssObjectList(ObjectListRequest) returns(ObjectListResponse){}
   rpc GetLines(InfoByIDRequest) returns(LineListResponse){}
+  rpc InsertLine(LineList) returns (BooleanResponse){}
   rpc GetMusics(InfoByIDRequest) returns(MusicListResponse){}
   rpc JudgeUsername(UsernameRequest) returns(BooleanResponse){}
   rpc InsertUser(UserInfo) returns (BooleanResponse){}
   rpc GetUserByUserName(UsernameRequest) returns (UserInfo){}
+  rpc AuthenticateUser(VerificationRequest) returns(UserInfo){}
 }

@@ -49,13 +49,14 @@
             required
             type="password"
           ></v-text-field>
-          <v-alert dense outlined type="error" v-model="showError">
-            An unknown error has occurred
+
+           <v-alert dense type="info" outlined v-model="showInfo">
+           If you already have an account, <strong @click="goLogin()" style="cursor: pointer">Log In</strong> 
           </v-alert>
 
           <v-alert dense text type="success" v-model="showSuccess">
             Account <strong>{{ this.username }}</strong> created successfully
-            <strong style="cursor: pointer">Log in</strong>
+            <strong style="cursor: pointer" @click="goLogin()">Log in</strong>
           </v-alert>
 
           <v-alert dense outlined type="error" v-model="showRepeat">
@@ -67,7 +68,7 @@
         <v-card-actions>
           <v-btn text @click="goHome()"> Cancel </v-btn>
           <v-spacer></v-spacer>
-          <v-btn color="primary" text @click="submit"> Submit </v-btn>
+          <v-btn color="primary" text @click="submit"> Sign Up </v-btn>
         </v-card-actions>
       </v-card>
     </v-col>
@@ -85,9 +86,9 @@ export default {
     formHasErrors: false,
     isPassword: false,
     isUsername: false,
-    showError: false,
     showSuccess: false,
     showRepeat: false,
+    showInfo: true
   }),
   computed: {
     form() {
@@ -132,7 +133,6 @@ export default {
       }
     },
     submit() {
-      this.showError = false;
       this.showSuccess = false;
       this.showRepeat = false;
       if (
@@ -194,6 +194,10 @@ export default {
           path: "/",
         })
         .catch((err) => err);
+    },
+
+    goLogin() {
+      this.$router.push({ path: "/login" }).catch((err) => err);
     },
   },
 };

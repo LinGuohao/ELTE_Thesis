@@ -7,7 +7,6 @@ const store = new Vuex.Store({
     state: {
         detailInfo: [],
         detailInfoJson: [],
-        userInfo:null
     },
 
     mutations: {

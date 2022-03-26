@@ -12,4 +12,8 @@
         insert into movie_lines (id,sentence,author,line_id) values(#{id,jdbcType=VARCHAR},#{sentence,jdbcType=VARCHAR}
             ,#{author,jdbcType=VARCHAR},#{line_id,jdbcType=VARCHAR})
     </insert>
+
+    <delete id="deleteLine" parameterType="String">
+        delete from movie_lines where line_id = #{line_id}
+    </delete>
 </mapper>

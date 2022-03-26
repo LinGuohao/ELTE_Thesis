@@ -5,7 +5,9 @@
         <v-icon dense style="cursor: pointer" @click="add()"
           >mdi-plus-circle-outline</v-icon
         >
-        <v-icon dense style="cursor: pointer">mdi-delete-forever</v-icon>
+        <v-icon dense style="cursor: pointer" @click="del()"
+          >mdi-delete-forever</v-icon
+        >
       </v-row>
     </v-alert>
 
@@ -42,6 +44,33 @@
           <v-btn text @click="showEditing = false">Close</v-btn>
           <v-spacer></v-spacer>
           <v-btn color="primary" text @click="addLine()"> Add </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog
+      max-width="600"
+      v-model="showDel"
+      transition="dialog-bottom-transition"
+    >
+      <v-card>
+        <v-toolbar color="primary" dark>Delete movie lines</v-toolbar>
+        <v-card>
+          <v-container fluid>
+            <v-checkbox
+              v-for="(line, index) in lines"
+              :key="index"
+              v-model="selected"
+              :label="line[1]"
+              :value="line[3]"
+              dense
+            ></v-checkbox>
+          </v-container>
+        </v-card>
+        <v-card-actions>
+          <v-btn text @click="showDel = false">Close</v-btn>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click="deleteLine()"> Delete </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -85,11 +114,15 @@
         </v-btn>
       </v-card-actions>
     </v-card>
+
+    <v-snackbar v-model="snackbar" :timeout="1000">
+      {{ snackbartext }}
+    </v-snackbar>
   </div>
 </template>
 
 <script>
-import { InfoByIDRequest, LineList } from "@/proto/moviedb_pb.js";
+import { InfoByIDRequest, LineList ,deleteLineRequest} from "@/proto/moviedb_pb.js";
 export default {
   name: "MovieLines",
   data: () => ({
@@ -99,6 +132,10 @@ export default {
     author: null,
     sentence: null,
     showError: false,
+    showDel: false,
+    selected: [],
+    snackbar: false,
+    snackbartext: null,
   }),
   mounted: function () {
     this.lines = this.$backend.getLines(
@@ -144,6 +181,26 @@ export default {
         );
       }
     },
+    deleteLine() {
+      for (var line in this.selected) {
+        this.$backend.deleteLine(
+          new deleteLineRequest().setLineid(this.selected[line]).setId(this.detailInfo[0]),
+          {},
+          (err, response) => {
+            if (response.array[0] == -1) {
+              console.log("An error occurred");
+            }
+          }
+        );
+      }
+        this.snackbartext = "Success";
+        window.location.reload();
+        this.snackbar = true;
+      
+    },
+    del() {
+      this.showDel = true;
+    },
   },
   computed: {
     detailInfo() {
@@ -152,13 +209,13 @@ export default {
     length() {
       return this.lines.length;
     },
-    isAdmin(){
-      if(localStorage.getItem('roles')=="admin"){
+    isAdmin() {
+      if (localStorage.getItem("roles") == "admin") {
         return true;
-      }else{
+      } else {
         return false;
       }
-    }
+    },
   },
 };
 </script>

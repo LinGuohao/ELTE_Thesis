@@ -144,7 +144,23 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
         responseStreamObserver.onNext(response);
         responseStreamObserver.onCompleted();
     }
-
+    @Override
+    public void deleteLine(deleteLineRequest request,StreamObserver<BooleanResponse> streamObserver){
+        BooleanResponse.Builder builder = BooleanResponse.newBuilder();
+        int oldLength = lineMapper.getLines(request.getId()).size();
+        System.out.println(oldLength);
+        lineMapper.deleteLine(request.getLineID());
+        int Length = lineMapper.getLines(request.getId()).size();
+        System.out.println(Length);
+        if(oldLength-1 == Length){
+            builder.setIsTrue(1);
+        }else{
+            builder.setIsTrue(-1);
+        }
+        BooleanResponse response = builder.build();
+        streamObserver.onNext(response);
+        streamObserver.onCompleted();
+    }
     @Override
     public void getMusics(InfoByIDRequest request, StreamObserver<MusicListResponse> responseObserver) {
         MusicListResponse.Builder builder = MusicListResponse.newBuilder();

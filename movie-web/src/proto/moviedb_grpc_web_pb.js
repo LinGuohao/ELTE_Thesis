@@ -505,6 +505,67 @@ proto.com.guohaohome.moviedb.proto.MoviedbServicePromiseClient.prototype.insertL
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.com.guohaohome.moviedb.proto.deleteLineRequest,
+ *   !proto.com.guohaohome.moviedb.proto.BooleanResponse>}
+ */
+const methodDescriptor_MoviedbService_DeleteLine = new grpc.web.MethodDescriptor(
+  '/com.guohaohome.moviedb.proto.MoviedbService/DeleteLine',
+  grpc.web.MethodType.UNARY,
+  proto.com.guohaohome.moviedb.proto.deleteLineRequest,
+  proto.com.guohaohome.moviedb.proto.BooleanResponse,
+  /**
+   * @param {!proto.com.guohaohome.moviedb.proto.deleteLineRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.com.guohaohome.moviedb.proto.BooleanResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.com.guohaohome.moviedb.proto.deleteLineRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.com.guohaohome.moviedb.proto.BooleanResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.com.guohaohome.moviedb.proto.BooleanResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.com.guohaohome.moviedb.proto.MoviedbServiceClient.prototype.deleteLine =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/com.guohaohome.moviedb.proto.MoviedbService/DeleteLine',
+      request,
+      metadata || {},
+      methodDescriptor_MoviedbService_DeleteLine,
+      callback);
+};
+
+
+/**
+ * @param {!proto.com.guohaohome.moviedb.proto.deleteLineRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.com.guohaohome.moviedb.proto.BooleanResponse>}
+ *     Promise that resolves to the response
+ */
+proto.com.guohaohome.moviedb.proto.MoviedbServicePromiseClient.prototype.deleteLine =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/com.guohaohome.moviedb.proto.MoviedbService/DeleteLine',
+      request,
+      metadata || {},
+      methodDescriptor_MoviedbService_DeleteLine);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.com.guohaohome.moviedb.proto.InfoByIDRequest,
  *   !proto.com.guohaohome.moviedb.proto.MusicListResponse>}
  */

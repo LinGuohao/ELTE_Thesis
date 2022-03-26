@@ -50,6 +50,11 @@ message LineList{
   string lineID=4;
 }
 
+message deleteLineRequest{
+  string id=1;
+  string lineID=2;
+}
+
 message LineListResponse{
   repeated LineList reply = 1;
 }
@@ -94,6 +99,7 @@ service MoviedbService{
   rpc GetOssObjectList(ObjectListRequest) returns(ObjectListResponse){}
   rpc GetLines(InfoByIDRequest) returns(LineListResponse){}
   rpc InsertLine(LineList) returns (BooleanResponse){}
+  rpc DeleteLine(deleteLineRequest) returns (BooleanResponse){}
   rpc GetMusics(InfoByIDRequest) returns(MusicListResponse){}
   rpc JudgeUsername(UsernameRequest) returns(BooleanResponse){}
   rpc InsertUser(UserInfo) returns (BooleanResponse){}

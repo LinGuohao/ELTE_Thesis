@@ -1,8 +1,11 @@
 package com.guohaohome.moviedb.grpc;
 
+import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSS;
+import com.aliyun.oss.OSSException;
 import com.aliyun.oss.model.ListObjectsV2Result;
 import com.aliyun.oss.model.OSSObjectSummary;
+import com.aliyun.oss.model.PutObjectRequest;
 import com.guohaohome.moviedb.dao.InfoMapper;
 import com.guohaohome.moviedb.dao.LineMapper;
 import com.guohaohome.moviedb.dao.MovieMapper;
@@ -19,11 +22,11 @@ import org.apache.commons.codec.binary.Hex;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -129,38 +132,40 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
     }
 
     @Override
-    public void insertLine(LineList request, StreamObserver<BooleanResponse> responseStreamObserver){
+    public void insertLine(LineList request, StreamObserver<BooleanResponse> responseStreamObserver) {
         BooleanResponse.Builder builder = BooleanResponse.newBuilder();
         int oldLength = lineMapper.getLines(request.getId()).size();
-        Line line = new Line(request.getId(),request.getSentence(),request.getAuthor(),generateId());
+        Line line = new Line(request.getId(), request.getSentence(), request.getAuthor(), generateId());
         lineMapper.insertLine(line);
         int Length = lineMapper.getLines(request.getId()).size();
-        if(oldLength+1 == Length){
+        if (oldLength + 1 == Length) {
             builder.setIsTrue(1);
-        }else{
+        } else {
             builder.setIsTrue(-1);
         }
         BooleanResponse response = builder.build();
         responseStreamObserver.onNext(response);
         responseStreamObserver.onCompleted();
     }
+
     @Override
-    public void deleteLine(deleteLineRequest request,StreamObserver<BooleanResponse> streamObserver){
+    public void deleteLine(deleteLineRequest request, StreamObserver<BooleanResponse> streamObserver) {
         BooleanResponse.Builder builder = BooleanResponse.newBuilder();
         int oldLength = lineMapper.getLines(request.getId()).size();
         System.out.println(oldLength);
         lineMapper.deleteLine(request.getLineID());
         int Length = lineMapper.getLines(request.getId()).size();
         System.out.println(Length);
-        if(oldLength-1 == Length){
+        if (oldLength - 1 == Length) {
             builder.setIsTrue(1);
-        }else{
+        } else {
             builder.setIsTrue(-1);
         }
         BooleanResponse response = builder.build();
         streamObserver.onNext(response);
         streamObserver.onCompleted();
     }
+
     @Override
     public void getMusics(InfoByIDRequest request, StreamObserver<MusicListResponse> responseObserver) {
         MusicListResponse.Builder builder = MusicListResponse.newBuilder();
@@ -242,6 +247,20 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
         streamObserver.onCompleted();
     }
 
+    @Override
+    public void uploadToOSS(FileUploadRequest request, StreamObserver<BooleanResponse> streamObserver) {
+        BooleanResponse.Builder builder = BooleanResponse.newBuilder();
+        try {
+            PutObjectRequest putObjectRequest = new PutObjectRequest(ossConfiguration.getBucketName(), request.getObjectName(), new ByteArrayInputStream(request.getContent().getBytes()));
+            ossClient.putObject(putObjectRequest);
+            builder.setIsTrue(1);
+        }catch (OSSException | ClientException exception){
+            builder.setIsTrue(-1);
+        }
+        BooleanResponse response = builder.build();
+        streamObserver.onNext(response);
+        streamObserver.onCompleted();
+    }
 
     public String[] generateMusicInformation(String fullName) {
         String[] temp = fullName.split("\\.");
@@ -255,11 +274,11 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
         return fullName.split("_");
     }
 
-    public String generateId(){
+    public String generateId() {
         long time = Calendar.getInstance().getTimeInMillis();
         Random r = new Random();
         r.setSeed(time);
         int randInt = r.nextInt(100000);
-        return String.valueOf(time) + String.valueOf(randInt);
+        return String.valueOf(time) + randInt;
     }
 }

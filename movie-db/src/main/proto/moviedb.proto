@@ -90,6 +90,11 @@ message VerificationRequest{
   string password = 2;
 }
 
+message FileUploadRequest{
+  string objectName = 1;
+  string content = 2;
+}
+
 
 service MoviedbService{
   rpc GetAllID (google.protobuf.Empty) returns (AllMovieIDListResponse){}
@@ -105,4 +110,5 @@ service MoviedbService{
   rpc InsertUser(UserInfo) returns (BooleanResponse){}
   rpc GetUserByUserName(UsernameRequest) returns (UserInfo){}
   rpc AuthenticateUser(VerificationRequest) returns(UserInfo){}
+  rpc UploadToOSS(FileUploadRequest) returns (BooleanResponse){}
 }

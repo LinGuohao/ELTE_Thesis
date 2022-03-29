@@ -122,7 +122,11 @@
 </template>
 
 <script>
-import { InfoByIDRequest, LineList ,deleteLineRequest} from "@/proto/moviedb_pb.js";
+import {
+  InfoByIDRequest,
+  LineList,
+  deleteLineRequest,
+} from "@/proto/moviedb_pb.js";
 export default {
   name: "MovieLines",
   data: () => ({
@@ -184,7 +188,9 @@ export default {
     deleteLine() {
       for (var line in this.selected) {
         this.$backend.deleteLine(
-          new deleteLineRequest().setLineid(this.selected[line]).setId(this.detailInfo[0]),
+          new deleteLineRequest()
+            .setLineid(this.selected[line])
+            .setId(this.detailInfo[0]),
           {},
           (err, response) => {
             if (response.array[0] == -1) {
@@ -193,10 +199,9 @@ export default {
           }
         );
       }
-        this.snackbartext = "Success";
-        window.location.reload();
-        this.snackbar = true;
-      
+      this.snackbartext = "Success";
+      window.location.reload();
+      this.snackbar = true;
     },
     del() {
       this.showDel = true;

@@ -120,7 +120,7 @@ export default {
         {},
         (err, response) => {
           if (response.array[0] == 1) {
-                window.location.reload();
+                window.location.reload(true);
             }else{
                 this.showError = true;
             }

@@ -176,7 +176,7 @@ export default {
           (err, response) => {
             if (response.array[0] == 1) {
               this.showEditing = false;
-              window.location.reload();
+              window.location.reload(true);
             } else {
               this.showError = true;
               console.log("Insert Line error");
@@ -200,7 +200,7 @@ export default {
         );
       }
       this.snackbartext = "Success";
-      window.location.reload();
+      window.location.reload(true);
       this.snackbar = true;
     },
     del() {

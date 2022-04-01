@@ -26,9 +26,7 @@ import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Random;
 
 
 @GrpcService
@@ -47,6 +45,8 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
     OSS ossClient;
     @Autowired
     OSSConfiguration ossConfiguration;
+    @Autowired
+    Utils utils;
 
     public static String SHA256Encryption(String plaintext) {
         MessageDigest messageDigest;
@@ -135,7 +135,7 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
     public void insertLine(LineList request, StreamObserver<BooleanResponse> responseStreamObserver) {
         BooleanResponse.Builder builder = BooleanResponse.newBuilder();
         int oldLength = lineMapper.getLines(request.getId()).size();
-        Line line = new Line(request.getId(), request.getSentence(), request.getAuthor(), generateId());
+        Line line = new Line(request.getId(), request.getSentence(), request.getAuthor(), utils.generateId());
         lineMapper.insertLine(line);
         int Length = lineMapper.getLines(request.getId()).size();
         if (oldLength + 1 == Length) {
@@ -176,7 +176,7 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
             if (link.length() != 0) {
                 String[] splitLink = link.split("/");
                 String fullName = splitLink[splitLink.length - 1];
-                String[] result = generateMusicInformation(fullName);
+                String[] result = utils.generateMusicInformation(fullName);
                 builder.addReply(MusicInfo.newBuilder().setId(request.getId()).setAddress(link).setMusicName(result[0]).setArtist(result[1]));
             }
         }
@@ -248,7 +248,7 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
     }
 
     @Override
-    public void uploadToOSS(FileUploadRequest request, StreamObserver<BooleanResponse> streamObserver) {
+    public void uploadTextToOSS(TextUploadRequest request, StreamObserver<BooleanResponse> streamObserver) {
         BooleanResponse.Builder builder = BooleanResponse.newBuilder();
         try {
             PutObjectRequest putObjectRequest = new PutObjectRequest(ossConfiguration.getBucketName(), request.getObjectName(), new ByteArrayInputStream(request.getContent().getBytes()));
@@ -262,23 +262,24 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
         streamObserver.onCompleted();
     }
 
-    public String[] generateMusicInformation(String fullName) {
-        String[] temp = fullName.split("\\.");
-        fullName = "";
-        for (int i = 0; i < temp.length - 1; i++) {
-            fullName = fullName.concat(temp[i]);
-            if (i != temp.length - 2) {
-                fullName = fullName.concat(".");
-            }
+    @Override
+    public void uploadFileToOSS (FileUploadRequest request, StreamObserver<BooleanResponse> streamObserver) {
+        BooleanResponse.Builder builder = BooleanResponse.newBuilder();
+        try {
+            PutObjectRequest putObjectRequest = new PutObjectRequest(ossConfiguration.getBucketName()
+                    , request.getObjectPath()+ utils.generateFileName(request.getType()), Utils.base64ToFile(request.getContent()));
+            ossClient.putObject(putObjectRequest);
+            builder.setIsTrue(1);
+        }catch (OSSException | ClientException  exception){
+            builder.setIsTrue(-1);
+        } catch (Exception e) {
+            builder.setIsTrue(-1);
+            e.printStackTrace();
         }
-        return fullName.split("_");
+        BooleanResponse response = builder.build();
+        streamObserver.onNext(response);
+        streamObserver.onCompleted();
     }
 
-    public String generateId() {
-        long time = Calendar.getInstance().getTimeInMillis();
-        Random r = new Random();
-        r.setSeed(time);
-        int randInt = r.nextInt(100000);
-        return String.valueOf(time) + randInt;
-    }
+
 }

@@ -1,7 +1,116 @@
 <template>
   <v-container>
     <v-row>
-      <h1>{{ info[1] }}</h1>
+      <div>
+        <h1 v-if="info[1]">{{ info[1] }}</h1>
+        <h1 v-else>Movie Name</h1>
+        <v-alert
+          shaped
+          dark
+          color="info"
+          class="pb-0 mb-0"
+          dense
+          v-if="isAdmin"
+        >
+          <v-row justify="space-around" class="mb-0">
+            <v-icon dense style="cursor: pointer" @click="add()"
+              >mdi-account-edit-outline</v-icon
+            >
+            <v-icon dense style="cursor: pointer" @click="upload()"
+              >mdi-tray-arrow-up</v-icon
+            >
+          </v-row>
+        </v-alert>
+      </div>
+
+      <v-dialog
+        max-width="600"
+        v-model="showEditing"
+        transition="dialog-bottom-transition"
+      >
+        <v-card>
+          <v-toolbar color="primary" dark>Edit Movie Photos and Name</v-toolbar>
+          <v-card>
+            <v-card-text>
+              <v-card-title>Edit</v-card-title>
+              <v-card-text>
+                <v-text-field
+                  label="Movie name"
+                  v-model="editedName"
+                ></v-text-field>
+              </v-card-text>
+
+              <v-card-text>
+                <v-item-group v-model="selected" multiple>
+                  <v-row>
+                    <v-col
+                      v-for="(image, index) in images"
+                      :key="index"
+                      cols="12"
+                      md="6"
+                    >
+                      <v-item v-slot="{ active, toggle }">
+                        <v-img
+                          :src="image"
+                          height="150"
+                          class="text-right pa-2"
+                          @click="toggle"
+                        >
+                          <v-btn icon dark>
+                            <v-icon>
+                              {{ active ? "mdi-delete" : "mdi-delete-outline" }}
+                            </v-icon>
+                          </v-btn>
+                        </v-img>
+                      </v-item>
+                    </v-col>
+                  </v-row>
+                </v-item-group>
+              </v-card-text>
+            </v-card-text>
+
+            <v-alert dense outlined type="error" v-model="showError">
+              An unknown error has occurred
+            </v-alert>
+          </v-card>
+          <v-card-actions>
+            <v-btn text @click="showEditing = false">Close</v-btn>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" text @click="Edit()"> Edit </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <v-dialog
+        max-width="600"
+        v-model="showUpload"
+        transition="dialog-bottom-transition"
+      >
+        <v-card>
+          <v-toolbar color="primary" dark>Upload Photo</v-toolbar>
+          <v-card>
+            <v-card-text>
+              <v-file-input
+                accept="image/png, image/jpeg, image/bmp"
+                placeholder="Pick a Photo"
+                prepend-icon="mdi-camera"
+                label="Photo"
+                v-model="photoInfo"
+              ></v-file-input>
+            </v-card-text>
+
+            <v-alert dense outlined type="error" v-model="showError">
+              An unknown error has occurred
+            </v-alert>
+          </v-card>
+          <v-card-actions>
+            <v-btn text @click="showUpload = false">Close</v-btn>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" text @click="uploadPhoto()"> Upload </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
       <v-carousel
         cycle
         height="500"
@@ -38,11 +147,17 @@
 
 
 <script>
-import { InfoByIDRequest, ObjectListRequest } from "@/proto/moviedb_pb.js";
+import {
+  InfoByIDRequest,
+  ObjectListRequest,
+  FileUploadRequest,
+} from "@/proto/moviedb_pb.js";
+import { getFileExtension } from "@/utils/fileTools.js";
 import DetailRight from "./DetailRight.vue";
 import MovieLines from "./MovieLines.vue";
 import DescriptionPage from "./DescriptionPage.vue";
 import MusicComponent from "./MusicComponent.vue";
+
 export default {
   components: { DetailRight, MovieLines, DescriptionPage, MusicComponent },
   name: "DetailPage",
@@ -53,7 +168,14 @@ export default {
     info: [],
     files: [],
     images: [],
+    imagesPath: [],
     start: false,
+    showError: false,
+    showEditing: false,
+    editedName: null,
+    selected: [],
+    showUpload: false,
+    photoInfo: null,
   }),
 
   created: function () {
@@ -74,6 +196,7 @@ export default {
           this.$store.state.detailInfo = response.array;
           this.start = true;
           this.info = response.array;
+          this.editedName = this.info[1];
         }
       );
     },
@@ -86,11 +209,60 @@ export default {
         {},
         (err, response) => {
           console.log(response.array[0]);
+          this.imagesPath = response.array[0];
           this.images = response.array[0].map(
             (elment) => this.ossPrefix + elment[0]
           );
         }
       );
+    },
+    add() {
+      this.showError = false;
+      this.showEditing = true;
+    },
+    Edit() {
+      console.log(this.selected);
+    },
+    upload() {
+      this.showError = false;
+      this.showUpload = true;
+    },
+    uploadPhoto() {
+      this.getfileByBase64(this.photoInfo);
+    },
+
+    getfileByBase64(file) {
+      var reader = new FileReader();
+      // 传入一个参数对象即可得到基于该参数对象的文本内容
+      reader.readAsDataURL(file);
+      
+      reader.onload = e => {
+        // target.result 该属性表示目标对象的DataURL
+        //console.log(this);
+         this.$backend.uploadFileToOSS(
+          new FileUploadRequest()
+            .setObjectpath(this.info[0] + "/screenshot/")
+            .setType(getFileExtension(this.photoInfo))
+            .setContent(e.target.result),
+          {},
+          (err, response) => {
+            if (response.array[0] == -1) {
+              this.showError = true;
+            } else {
+              window.location.reload(true);
+            }
+          }
+        );
+      };
+    },
+  },
+  computed: {
+    isAdmin() {
+      if (localStorage.getItem("roles") == "admin") {
+        return true;
+      } else {
+        return false;
+      }
     },
   },
 };

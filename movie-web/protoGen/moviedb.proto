@@ -90,9 +90,15 @@ message VerificationRequest{
   string password = 2;
 }
 
-message FileUploadRequest{
+message TextUploadRequest{
   string objectName = 1;
   string content = 2;
+}
+
+message FileUploadRequest{
+  string objectPath = 1;
+  string type = 2;
+  string content = 3;
 }
 
 
@@ -110,5 +116,6 @@ service MoviedbService{
   rpc InsertUser(UserInfo) returns (BooleanResponse){}
   rpc GetUserByUserName(UsernameRequest) returns (UserInfo){}
   rpc AuthenticateUser(VerificationRequest) returns(UserInfo){}
-  rpc UploadToOSS(FileUploadRequest) returns (BooleanResponse){}
+  rpc UploadTextToOSS(TextUploadRequest) returns (BooleanResponse){}
+  rpc UploadFileToOSS(FileUploadRequest) returns (BooleanResponse){}
 }

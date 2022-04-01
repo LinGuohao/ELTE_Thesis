@@ -871,11 +871,72 @@ proto.com.guohaohome.moviedb.proto.MoviedbServicePromiseClient.prototype.authent
 /**
  * @const
  * @type {!grpc.web.MethodDescriptor<
+ *   !proto.com.guohaohome.moviedb.proto.TextUploadRequest,
+ *   !proto.com.guohaohome.moviedb.proto.BooleanResponse>}
+ */
+const methodDescriptor_MoviedbService_UploadTextToOSS = new grpc.web.MethodDescriptor(
+  '/com.guohaohome.moviedb.proto.MoviedbService/UploadTextToOSS',
+  grpc.web.MethodType.UNARY,
+  proto.com.guohaohome.moviedb.proto.TextUploadRequest,
+  proto.com.guohaohome.moviedb.proto.BooleanResponse,
+  /**
+   * @param {!proto.com.guohaohome.moviedb.proto.TextUploadRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.com.guohaohome.moviedb.proto.BooleanResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.com.guohaohome.moviedb.proto.TextUploadRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.com.guohaohome.moviedb.proto.BooleanResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.com.guohaohome.moviedb.proto.BooleanResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.com.guohaohome.moviedb.proto.MoviedbServiceClient.prototype.uploadTextToOSS =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/com.guohaohome.moviedb.proto.MoviedbService/UploadTextToOSS',
+      request,
+      metadata || {},
+      methodDescriptor_MoviedbService_UploadTextToOSS,
+      callback);
+};
+
+
+/**
+ * @param {!proto.com.guohaohome.moviedb.proto.TextUploadRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.com.guohaohome.moviedb.proto.BooleanResponse>}
+ *     Promise that resolves to the response
+ */
+proto.com.guohaohome.moviedb.proto.MoviedbServicePromiseClient.prototype.uploadTextToOSS =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/com.guohaohome.moviedb.proto.MoviedbService/UploadTextToOSS',
+      request,
+      metadata || {},
+      methodDescriptor_MoviedbService_UploadTextToOSS);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
  *   !proto.com.guohaohome.moviedb.proto.FileUploadRequest,
  *   !proto.com.guohaohome.moviedb.proto.BooleanResponse>}
  */
-const methodDescriptor_MoviedbService_UploadToOSS = new grpc.web.MethodDescriptor(
-  '/com.guohaohome.moviedb.proto.MoviedbService/UploadToOSS',
+const methodDescriptor_MoviedbService_UploadFileToOSS = new grpc.web.MethodDescriptor(
+  '/com.guohaohome.moviedb.proto.MoviedbService/UploadFileToOSS',
   grpc.web.MethodType.UNARY,
   proto.com.guohaohome.moviedb.proto.FileUploadRequest,
   proto.com.guohaohome.moviedb.proto.BooleanResponse,
@@ -900,13 +961,13 @@ const methodDescriptor_MoviedbService_UploadToOSS = new grpc.web.MethodDescripto
  * @return {!grpc.web.ClientReadableStream<!proto.com.guohaohome.moviedb.proto.BooleanResponse>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.com.guohaohome.moviedb.proto.MoviedbServiceClient.prototype.uploadToOSS =
+proto.com.guohaohome.moviedb.proto.MoviedbServiceClient.prototype.uploadFileToOSS =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
-      '/com.guohaohome.moviedb.proto.MoviedbService/UploadToOSS',
+      '/com.guohaohome.moviedb.proto.MoviedbService/UploadFileToOSS',
       request,
       metadata || {},
-      methodDescriptor_MoviedbService_UploadToOSS,
+      methodDescriptor_MoviedbService_UploadFileToOSS,
       callback);
 };
 
@@ -919,13 +980,13 @@ proto.com.guohaohome.moviedb.proto.MoviedbServiceClient.prototype.uploadToOSS =
  * @return {!Promise<!proto.com.guohaohome.moviedb.proto.BooleanResponse>}
  *     Promise that resolves to the response
  */
-proto.com.guohaohome.moviedb.proto.MoviedbServicePromiseClient.prototype.uploadToOSS =
+proto.com.guohaohome.moviedb.proto.MoviedbServicePromiseClient.prototype.uploadFileToOSS =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
-      '/com.guohaohome.moviedb.proto.MoviedbService/UploadToOSS',
+      '/com.guohaohome.moviedb.proto.MoviedbService/UploadFileToOSS',
       request,
       metadata || {},
-      methodDescriptor_MoviedbService_UploadToOSS);
+      methodDescriptor_MoviedbService_UploadFileToOSS);
 };
 
 

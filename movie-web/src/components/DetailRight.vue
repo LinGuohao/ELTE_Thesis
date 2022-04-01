@@ -121,7 +121,7 @@
 
 
 <script>
-import { FileUploadRequest, InfoRequest } from "@/proto/moviedb_pb.js";
+import { TextUploadRequest, InfoRequest } from "@/proto/moviedb_pb.js";
 export default {
   name: "DetailRight",
   data: () => ({
@@ -179,8 +179,8 @@ export default {
         {}
       );
 
-      this.$backend.uploadToOSS(
-        new FileUploadRequest().setObjectname(path).setContent(jsonString),
+      this.$backend.uploadTextToOSS(
+        new TextUploadRequest().setObjectname(path).setContent(jsonString),
         {},
         (err, response) => {
           if (response.array[0] == 1) {

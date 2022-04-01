@@ -66,7 +66,7 @@
 
 
 <script>
-import { FileUploadRequest } from "@/proto/moviedb_pb.js";
+import { TextUploadRequest } from "@/proto/moviedb_pb.js";
 export default {
   name: "DescriptionPage",
 
@@ -113,8 +113,8 @@ export default {
       //console.log(typeof(JSON.stringify(jsonString)));
 
       var path = this.detailInfo[0] + "/description.json";
-      this.$backend.uploadToOSS(
-        new FileUploadRequest()
+      this.$backend.uploadTextToOSS(
+        new TextUploadRequest()
           .setObjectname(path)
           .setContent(JSON.stringify(jsonString)),
         {},

@@ -254,7 +254,7 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
             PutObjectRequest putObjectRequest = new PutObjectRequest(ossConfiguration.getBucketName(), request.getObjectName(), new ByteArrayInputStream(request.getContent().getBytes()));
             ossClient.putObject(putObjectRequest);
             builder.setIsTrue(1);
-        }catch (OSSException | ClientException exception){
+        } catch (OSSException | ClientException exception) {
             builder.setIsTrue(-1);
         }
         BooleanResponse response = builder.build();
@@ -263,18 +263,32 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
     }
 
     @Override
-    public void uploadFileToOSS (FileUploadRequest request, StreamObserver<BooleanResponse> streamObserver) {
+    public void uploadFileToOSS(FileUploadRequest request, StreamObserver<BooleanResponse> streamObserver) {
         BooleanResponse.Builder builder = BooleanResponse.newBuilder();
         try {
             PutObjectRequest putObjectRequest = new PutObjectRequest(ossConfiguration.getBucketName()
-                    , request.getObjectPath()+ utils.generateFileName(request.getType()), Utils.base64ToFile(request.getContent()));
+                    , request.getObjectPath() + utils.generateFileName(request.getType()), Utils.base64ToFile(request.getContent()));
             ossClient.putObject(putObjectRequest);
             builder.setIsTrue(1);
-        }catch (OSSException | ClientException  exception){
+        } catch (OSSException | ClientException exception) {
             builder.setIsTrue(-1);
         } catch (Exception e) {
             builder.setIsTrue(-1);
             e.printStackTrace();
+        }
+        BooleanResponse response = builder.build();
+        streamObserver.onNext(response);
+        streamObserver.onCompleted();
+    }
+
+    @Override
+    public void deleteFileFromOSS(FileDeleteRequest request, StreamObserver<BooleanResponse> streamObserver) {
+        BooleanResponse.Builder builder = BooleanResponse.newBuilder();
+        try {
+            ossClient.deleteObject(ossConfiguration.getBucketName(), request.getFilePath());
+            builder.setIsTrue(1);
+        } catch (OSSException | ClientException exception) {
+            builder.setIsTrue(-1);
         }
         BooleanResponse response = builder.build();
         streamObserver.onNext(response);

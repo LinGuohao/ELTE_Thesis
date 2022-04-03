@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-app-bar app class="grey darken-4 white--text">
-      <v-toolbar-title> Home </v-toolbar-title>
+      <v-toolbar-title @click="goHome()" style="cursor: pointer"> Home </v-toolbar-title>
       <v-spacer></v-spacer>
 
       <v-btn>

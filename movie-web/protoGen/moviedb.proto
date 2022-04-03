@@ -101,6 +101,10 @@ message FileUploadRequest{
   string content = 3;
 }
 
+message FileDeleteRequest{
+  string filePath = 1;
+}
+
 
 service MoviedbService{
   rpc GetAllID (google.protobuf.Empty) returns (AllMovieIDListResponse){}
@@ -118,4 +122,5 @@ service MoviedbService{
   rpc AuthenticateUser(VerificationRequest) returns(UserInfo){}
   rpc UploadTextToOSS(TextUploadRequest) returns (BooleanResponse){}
   rpc UploadFileToOSS(FileUploadRequest) returns (BooleanResponse){}
+  rpc DeleteFileFromOSS(FileDeleteRequest) returns (BooleanResponse){}
 }

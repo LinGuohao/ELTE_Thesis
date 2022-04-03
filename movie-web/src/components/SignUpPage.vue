@@ -50,8 +50,9 @@
             type="password"
           ></v-text-field>
 
-           <v-alert dense type="info" outlined v-model="showInfo">
-           If you already have an account, <strong @click="goLogin()" style="cursor: pointer">Log In</strong> 
+          <v-alert dense type="info" outlined v-model="showInfo">
+            If you already have an account,
+            <strong @click="goLogin()" style="cursor: pointer">Log In</strong>
           </v-alert>
 
           <v-alert dense text type="success" v-model="showSuccess">
@@ -88,7 +89,7 @@ export default {
     isUsername: false,
     showSuccess: false,
     showRepeat: false,
-    showInfo: true
+    showInfo: true,
   }),
   computed: {
     form() {

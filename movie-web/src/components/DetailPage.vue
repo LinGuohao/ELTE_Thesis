@@ -151,6 +151,8 @@ import {
   InfoByIDRequest,
   ObjectListRequest,
   FileUploadRequest,
+  FileDeleteRequest,
+  InfoRequest
 } from "@/proto/moviedb_pb.js";
 import { getFileExtension } from "@/utils/fileTools.js";
 import DetailRight from "./DetailRight.vue";
@@ -176,6 +178,7 @@ export default {
     selected: [],
     showUpload: false,
     photoInfo: null,
+    pList: [],
   }),
 
   created: function () {
@@ -221,8 +224,35 @@ export default {
       this.showEditing = true;
     },
     Edit() {
-      console.log(this.selected);
+      this.selected.forEach((e) => {
+        this.pList.push(this.deleteOperation(this.imagesPath[e][0]));
+      });
+      this.pList.push(this.editNameOperation());
+      Promise.all(this.pList).then(window.location.reload(true));
     },
+
+    editNameOperation() {
+      return new Promise(() => {
+        this.$backend.updateByID(
+          new InfoRequest()
+            .setId(this.info[0])
+            .setName(this.editedName)
+            .setImdb(this.info[2])
+            .setTomatoes(this.info[3])
+        );
+      });
+    },
+
+    deleteOperation(path) {
+      return new Promise(() =>
+        this.$backend.deleteFileFromOSS(
+          new FileDeleteRequest().setFilepath(path),
+          {},
+          () => {}
+        )
+      );
+    },
+
     upload() {
       this.showError = false;
       this.showUpload = true;
@@ -235,11 +265,11 @@ export default {
       var reader = new FileReader();
       // 传入一个参数对象即可得到基于该参数对象的文本内容
       reader.readAsDataURL(file);
-      
-      reader.onload = e => {
+
+      reader.onload = (e) => {
         // target.result 该属性表示目标对象的DataURL
         //console.log(this);
-         this.$backend.uploadFileToOSS(
+        this.$backend.uploadFileToOSS(
           new FileUploadRequest()
             .setObjectpath(this.info[0] + "/screenshot/")
             .setType(getFileExtension(this.photoInfo))

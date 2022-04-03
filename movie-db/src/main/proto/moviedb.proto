@@ -105,6 +105,14 @@ message FileDeleteRequest{
   string filePath = 1;
 }
 
+message MusicUploadRequest{
+  string MusicFilePath = 1;
+  string musicName = 2;
+  string artist  = 3;
+  string type = 4;
+  string content = 5;
+}
+
 
 service MoviedbService{
   rpc GetAllID (google.protobuf.Empty) returns (AllMovieIDListResponse){}
@@ -123,4 +131,5 @@ service MoviedbService{
   rpc UploadTextToOSS(TextUploadRequest) returns (BooleanResponse){}
   rpc UploadFileToOSS(FileUploadRequest) returns (BooleanResponse){}
   rpc DeleteFileFromOSS(FileDeleteRequest) returns (BooleanResponse){}
+  rpc UploadMusicToOSS(MusicUploadRequest) returns (BooleanResponse){}
 }

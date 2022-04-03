@@ -251,7 +251,8 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
     public void uploadTextToOSS(TextUploadRequest request, StreamObserver<BooleanResponse> streamObserver) {
         BooleanResponse.Builder builder = BooleanResponse.newBuilder();
         try {
-            PutObjectRequest putObjectRequest = new PutObjectRequest(ossConfiguration.getBucketName(), request.getObjectName(), new ByteArrayInputStream(request.getContent().getBytes()));
+            PutObjectRequest putObjectRequest = new PutObjectRequest(ossConfiguration.getBucketName(),
+                    request.getObjectName(), new ByteArrayInputStream(request.getContent().getBytes()));
             ossClient.putObject(putObjectRequest);
             builder.setIsTrue(1);
         } catch (OSSException | ClientException exception) {
@@ -289,6 +290,24 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
             builder.setIsTrue(1);
         } catch (OSSException | ClientException exception) {
             builder.setIsTrue(-1);
+        }
+        BooleanResponse response = builder.build();
+        streamObserver.onNext(response);
+        streamObserver.onCompleted();
+    }
+
+    @Override
+    public void uploadMusicToOSS(MusicUploadRequest request, StreamObserver<BooleanResponse> streamObserver) {
+        BooleanResponse.Builder builder = BooleanResponse.newBuilder();
+        try {
+            PutObjectRequest putObjectRequest = new PutObjectRequest(ossConfiguration.getBucketName(),
+                    request.getMusicFilePath() + utils.generateMusicFileName(request.getMusicName(), request.getArtist(), request.getType())
+                    , Utils.base64ToFile(request.getContent()));
+            ossClient.putObject(putObjectRequest);
+            builder.setIsTrue(1);
+        } catch (Exception e) {
+            builder.setIsTrue(-1);
+            e.printStackTrace();
         }
         BooleanResponse response = builder.build();
         streamObserver.onNext(response);

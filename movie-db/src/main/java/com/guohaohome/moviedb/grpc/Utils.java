@@ -14,12 +14,12 @@ import java.util.UUID;
 @Component
 public class Utils {
     public static File base64ToFile(String base64) throws Exception {
-        if (base64.contains("data:image")) {
+        if (base64.contains("data:image")||base64.contains("data:audio")) {
             base64 = base64.substring(base64.indexOf(",") + 1);
         }
         base64 = base64.replace("\r\n", "");
         //创建文件目录
-        String prefix = ".jpeg";
+        String prefix = ".tmp";
         File file = File.createTempFile(UUID.randomUUID().toString(), prefix);
         BufferedOutputStream bos = null;
         FileOutputStream fos = null;
@@ -71,5 +71,10 @@ public class Utils {
 
     public String generateFileName(String FileSuffix){
         return generateId() + "." + FileSuffix;
+    }
+
+    public String generateMusicFileName(String musicName, String artist, String type){
+        return musicName + "_" + artist + "." + type;
+
     }
 }

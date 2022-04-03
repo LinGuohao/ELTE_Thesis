@@ -1051,5 +1051,66 @@ proto.com.guohaohome.moviedb.proto.MoviedbServicePromiseClient.prototype.deleteF
 };
 
 
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.com.guohaohome.moviedb.proto.MusicUploadRequest,
+ *   !proto.com.guohaohome.moviedb.proto.BooleanResponse>}
+ */
+const methodDescriptor_MoviedbService_UploadMusicToOSS = new grpc.web.MethodDescriptor(
+  '/com.guohaohome.moviedb.proto.MoviedbService/UploadMusicToOSS',
+  grpc.web.MethodType.UNARY,
+  proto.com.guohaohome.moviedb.proto.MusicUploadRequest,
+  proto.com.guohaohome.moviedb.proto.BooleanResponse,
+  /**
+   * @param {!proto.com.guohaohome.moviedb.proto.MusicUploadRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.com.guohaohome.moviedb.proto.BooleanResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.com.guohaohome.moviedb.proto.MusicUploadRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.com.guohaohome.moviedb.proto.BooleanResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.com.guohaohome.moviedb.proto.BooleanResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.com.guohaohome.moviedb.proto.MoviedbServiceClient.prototype.uploadMusicToOSS =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/com.guohaohome.moviedb.proto.MoviedbService/UploadMusicToOSS',
+      request,
+      metadata || {},
+      methodDescriptor_MoviedbService_UploadMusicToOSS,
+      callback);
+};
+
+
+/**
+ * @param {!proto.com.guohaohome.moviedb.proto.MusicUploadRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.com.guohaohome.moviedb.proto.BooleanResponse>}
+ *     Promise that resolves to the response
+ */
+proto.com.guohaohome.moviedb.proto.MoviedbServicePromiseClient.prototype.uploadMusicToOSS =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/com.guohaohome.moviedb.proto.MoviedbService/UploadMusicToOSS',
+      request,
+      metadata || {},
+      methodDescriptor_MoviedbService_UploadMusicToOSS);
+};
+
+
 module.exports = proto.com.guohaohome.moviedb.proto;
 

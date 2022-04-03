@@ -1,5 +1,64 @@
 <template>
   <div>
+    <v-alert shaped dark color="info" class="pb-0 mb-0" dense v-if="isAdmin">
+      <v-row justify="space-around" class="mb-0">
+        <v-icon dense style="cursor: pointer" @click="upload()"
+          >mdi-tray-arrow-up</v-icon
+        >
+        <v-icon dense style="cursor: pointer" @click="del()"
+          >mdi-delete-forever</v-icon
+        >
+      </v-row>
+    </v-alert>
+
+    <v-dialog
+      max-width="600"
+      v-model="showUpload"
+      transition="dialog-bottom-transition"
+    >
+      <v-card>
+        <v-toolbar color="primary" dark>Upload new Music</v-toolbar>
+        <v-card>
+          <v-card-text>
+            <v-card-title>Music Infomation</v-card-title>
+            <v-card-text>
+              <v-text-field
+                :rules="[() => !!musicName || 'This field is required']"
+                label="Music name"
+                v-model="musicName"
+              ></v-text-field>
+              <v-text-field
+                :rules="[() => !!artistName || 'This field is required']"
+                label="Artist name"
+                v-model="artistName"
+              ></v-text-field>
+              <v-file-input
+                :rules="[() => !!musicFile || 'This field is required']"
+                accept="audio/mpeg, audio/ogg, audio/wav"
+                placeholder="Pick Music File from Local"
+                prepend-icon="mdi-music"
+                label="Upload Music File"
+                v-model="musicFile"
+                :loading="isLoading"
+              ></v-file-input>
+            </v-card-text>
+          </v-card-text>
+
+          <v-alert dense outlined type="error" v-model="showError">
+            An unknown error has occurred
+          </v-alert>
+          <v-alert dense outlined type="error" v-model="showMissing">
+            All fields need to be filled in
+          </v-alert>
+        </v-card>
+        <v-card-actions>
+          <v-btn text @click="showUpload = false">Close</v-btn>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click="uploadMusic()"> UPLOAD </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <v-card v-if="noMusic == false">
       <v-img
         :src="$ossPrefix + detailInfo[0] + '/cover.jpg'"
@@ -55,7 +114,8 @@
 </template>
     
 <script>
-import { InfoByIDRequest } from "@/proto/moviedb_pb.js";
+import { InfoByIDRequest, MusicUploadRequest } from "@/proto/moviedb_pb.js";
+import { getFileExtension } from "@/utils/fileTools.js";
 export default {
   data: () => ({
     show: false,
@@ -68,6 +128,14 @@ export default {
     currentTime: 0,
     noMusic: false,
     isDown: false,
+    showError: false,
+    showMissing: false,
+    showDelete: false,
+    showUpload: false,
+    musicName: null,
+    artistName: null,
+    musicFile: null,
+    isLoading:false
   }),
 
   created: function () {
@@ -172,6 +240,50 @@ export default {
       this.audio.play();
       this.musicIcon = "mdi-pause";
     },
+    upload() {
+      this.showError = false;
+      this.showMissing = false;
+      this.showUpload = true;
+    },
+    del() {
+      this.showError = false;
+      this.showDelete = true;
+    },
+    uploadMusic() {
+      if (!this.musicName || !this.artistName || !this.musicFile) {
+        this.showMissing = true;
+      } else {
+        this.isLoading = true;
+        this.getfileByBase64AndUpload(this.musicFile);
+      }
+    },
+
+    getfileByBase64AndUpload(file) {
+      var reader = new FileReader();
+      // 传入一个参数对象即可得到基于该参数对象的文本内容
+      reader.readAsDataURL(file);
+
+      reader.onload = (e) => {
+        // target.result 该属性表示目标对象的DataURL
+        console.log(e.target.result);
+        this.$backend.uploadMusicToOSS(
+          new MusicUploadRequest()
+            .setMusicfilepath(this.detailInfo[0] + "/OST/")
+            .setMusicname(this.musicName)
+            .setArtist(this.artistName)
+            .setType(getFileExtension(this.musicFile))
+            .setContent(e.target.result),
+          {},
+          (err, response) => {
+            if (null || response.array[0] == -1) {
+              this.showError = true;
+            } else {
+              window.location.reload(true);
+            }
+          }
+        );
+      };
+    },
   },
   computed: {
     detailInfo() {
@@ -203,6 +315,13 @@ export default {
           "/" +
           this.formatTime(this.musicLength)
         );
+      }
+    },
+    isAdmin() {
+      if (localStorage.getItem("roles") == "admin") {
+        return true;
+      } else {
+        return false;
       }
     },
   },

@@ -59,6 +59,44 @@
       </v-card>
     </v-dialog>
 
+    <v-dialog
+      max-width="600"
+      v-model="showDelete"
+      transition="dialog-bottom-transition"
+    >
+      <v-card>
+        <v-toolbar color="primary" dark>Delete a music</v-toolbar>
+        <v-card>
+          <v-card-text>
+            <v-container fluid>
+              <v-checkbox
+                v-model="deleteList"
+                :label="
+                  'Music name: ' +
+                  musicInfo[index][2] +
+                  '     Artist: ' +
+                  musicInfo[index][3]
+                "
+                :value="musicInfo[index][1]"
+                dense
+                v-for="(n, index) in musicInfo"
+                :key="index"
+              ></v-checkbox>
+            </v-container>
+          </v-card-text>
+
+          <v-alert dense outlined type="error" v-model="showError">
+            An unknown error has occurred
+          </v-alert>
+        </v-card>
+        <v-card-actions>
+          <v-btn text @click="showDelete = false">Close</v-btn>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click="deleteMusic()"> DELETE </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <v-card v-if="noMusic == false">
       <v-img
         :src="$ossPrefix + detailInfo[0] + '/cover.jpg'"
@@ -114,7 +152,11 @@
 </template>
     
 <script>
-import { InfoByIDRequest, MusicUploadRequest } from "@/proto/moviedb_pb.js";
+import {
+  InfoByIDRequest,
+  MusicUploadRequest,
+  FileDeleteRequest,
+} from "@/proto/moviedb_pb.js";
 import { getFileExtension } from "@/utils/fileTools.js";
 export default {
   data: () => ({
@@ -135,7 +177,8 @@ export default {
     musicName: null,
     artistName: null,
     musicFile: null,
-    isLoading:false
+    isLoading: false,
+    deleteList: [],
   }),
 
   created: function () {
@@ -156,6 +199,7 @@ export default {
         {},
         (err, response) => {
           this.musicInfo = response.array[0];
+          //console.log(this.musicInfo);
           if (this.musicInfo.length != 0) {
             this.noMusic = false;
             this.clicked = this.musicInfo[0];
@@ -265,7 +309,7 @@ export default {
 
       reader.onload = (e) => {
         // target.result 该属性表示目标对象的DataURL
-        console.log(e.target.result);
+        //console.log(e.target.result);
         this.$backend.uploadMusicToOSS(
           new MusicUploadRequest()
             .setMusicfilepath(this.detailInfo[0] + "/OST/")
@@ -283,6 +327,23 @@ export default {
           }
         );
       };
+    },
+    deleteMusic() {
+      var promiseList = [];
+      this.deleteList.forEach((e) => {
+        promiseList.push(this.deleteMusicOperation(e));
+      });
+
+      Promise.all(promiseList).then(window.location.reload(true));
+    },
+    deleteMusicOperation(path) {
+      return new Promise(() =>
+        this.$backend.deleteFileFromOSS(
+          new FileDeleteRequest().setFilepath(path),
+          {},
+          () => {}
+        )
+      );
     },
   },
   computed: {

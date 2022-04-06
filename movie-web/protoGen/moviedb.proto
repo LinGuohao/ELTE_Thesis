@@ -122,6 +122,14 @@ message CommentInfo{
 message CommentListResponse{
   repeated CommentInfo reply = 1;
 }
+message UserLikeInfo{
+  string username = 1;
+  string id = 2;
+}
+
+message UserLikeListResponse{
+  repeated UserLikeInfo reply = 1;
+}
 
 
 
@@ -147,4 +155,7 @@ service MoviedbService{
   rpc GetCommentByUserName(InfoByIDRequest) returns (CommentListResponse){}
   rpc InsertComment(CommentInfo) returns (BooleanResponse){}
   rpc DeleteComment(InfoByIDRequest) returns (BooleanResponse){}
+  rpc GetUserLikes(UsernameRequest) returns(UserLikeListResponse){}
+  rpc InsertUserLike(UserLikeInfo) returns (BooleanResponse){}
+  rpc DeleteUserLike(UserLikeInfo) returns (BooleanResponse){}
 }

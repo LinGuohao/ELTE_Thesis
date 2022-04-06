@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.guohaohome.moviedb.dao.UserLikeMapper">
+    <select id="getUserLikes" parameterType="String" resultType="com.guohaohome.moviedb.sqlEntity.UserLike">
+        select * from user_like where username = #{username}
+    </select>
+
+    <insert id="insertUserLike" parameterType="com.guohaohome.moviedb.sqlEntity.UserLike">
+        insert into user_like (username,id) values (#{username,jdbcType=VARCHAR},#{id,jdbcType=VARCHAR})
+    </insert>
+
+    <delete id="deleteUserLike" parameterType="com.guohaohome.moviedb.sqlEntity.UserLike">
+        delete from user_like where username = #{username} and id = #{id}
+    </delete>
+</mapper>

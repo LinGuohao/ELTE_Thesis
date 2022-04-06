@@ -2,8 +2,35 @@
   <v-container>
     <v-row>
       <div>
-        <h1 v-if="info[1]">{{ info[1] }}</h1>
-        <h1 v-else>Movie Name</h1>
+        <v-app-bar class="blue-grey darken-4 white--text" :elevation="0">
+          <v-toolbar-title>
+            <h1 v-if="info[1]">{{ info[1] }}</h1>
+            <h1 v-else>Movie Name</h1>
+          </v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-icon
+            v-if="userInfo && !isFavorite"
+            right
+            large
+            dark
+            style="cursor: pointer"
+            @click="addFavorite()"
+          >
+            mdi-cards-heart-outline</v-icon
+          >
+          <v-icon
+            v-if="userInfo && isFavorite"
+            right
+            large
+            dark
+            style="cursor: pointer"
+            color="red"
+            @click="deleteFavorite()"
+          >
+            mdi-cards-heart</v-icon
+          >
+        </v-app-bar>
+
         <v-alert
           shaped
           dark
@@ -154,6 +181,8 @@ import {
   FileUploadRequest,
   FileDeleteRequest,
   InfoRequest,
+  UsernameRequest,
+  UserLikeInfo,
 } from "@/proto/moviedb_pb.js";
 import { getFileExtension } from "@/utils/fileTools.js";
 import DetailRight from "./DetailRight.vue";
@@ -187,6 +216,8 @@ export default {
     showUpload: false,
     photoInfo: null,
     pList: [],
+    isFavorite: false,
+    userLikeList: [],
   }),
 
   created: function () {
@@ -196,6 +227,7 @@ export default {
   methods: {
     init() {
       this.getInfo();
+      this.getUserLikeList();
     },
 
     getInfo() {
@@ -210,6 +242,18 @@ export default {
           this.editedName = this.info[1];
         }
       );
+    },
+
+    getUserLikeList() {
+      if (this.userInfo) {
+        this.$backend.getUserLikes(
+          new UsernameRequest().setUsername(this.userInfo),
+          {},
+          (err, response) => {
+            this.userLikeList = response.array[0];
+          }
+        );
+      }
     },
 
     getAllImages() {
@@ -293,6 +337,28 @@ export default {
         );
       };
     },
+    addFavorite() {
+      this.$backend.insertUserLike(
+        new UserLikeInfo().setUsername(this.userInfo).setId(this.info[0]),
+        {},
+        (err, response) => {
+          if(response.array[0] == 1){
+            this.isFavorite = true;
+          }
+        }
+      );
+    },
+    deleteFavorite() {
+       this.$backend.deleteUserLike(
+        new UserLikeInfo().setUsername(this.userInfo).setId(this.info[0]),
+        {},
+        (err, response) => {
+          if(response.array[0] == 1){
+            this.isFavorite = false;
+          }
+        }
+      );
+    },
   },
   computed: {
     isAdmin() {
@@ -300,6 +366,13 @@ export default {
         return true;
       } else {
         return false;
+      }
+    },
+    userInfo() {
+      if (localStorage.getItem("username") == null) {
+        return null;
+      } else {
+        return localStorage.getItem("username");
       }
     },
   },

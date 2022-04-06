@@ -10,6 +10,7 @@ import com.guohaohome.moviedb.dao.*;
 import com.guohaohome.moviedb.ossClient.OSSConfiguration;
 import com.guohaohome.moviedb.proto.*;
 import com.guohaohome.moviedb.sqlEntity.*;
+import com.guohaohome.moviedb.sqlEntity.UserLike;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.apache.commons.codec.binary.Hex;
@@ -37,6 +38,8 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
     UserMapper userMapper;
     @Autowired
     CommentMapper commentMapper;
+    @Autowired
+    UserLikeMapper userLikeMapper;
     @Autowired
     OSS ossClient;
     @Autowired
@@ -369,6 +372,49 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
         streamObserver.onNext(response);
         streamObserver.onCompleted();
     }
+    @Override
+    public void getUserLikes(UsernameRequest request, StreamObserver<UserLikeListResponse> responseObserver){
+        UserLikeListResponse.Builder builder = UserLikeListResponse.newBuilder();
+        List<UserLike> userLikeList = userLikeMapper.getUserLikes(request.getUsername());
+        for (UserLike userLike : userLikeList) {
+            builder.addReply(UserLikeInfo.newBuilder().setUsername(userLike.getUsername()).setId(userLike.getId()));
+        }
+        UserLikeListResponse response = builder.build();
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+    @Override
+    public void insertUserLike(UserLikeInfo request, StreamObserver<BooleanResponse> responseStreamObserver) {
+        BooleanResponse.Builder builder = BooleanResponse.newBuilder();
+        int oldLength = userLikeMapper.getUserLikes(request.getUsername()).size();
+        UserLike userLike = new UserLike(request.getUsername(),request.getId());
+        userLikeMapper.insertUserLike(userLike);
+        int Length = userLikeMapper.getUserLikes(request.getUsername()).size();
+        if (oldLength + 1 == Length) {
+            builder.setIsTrue(1);
+        } else {
+            builder.setIsTrue(-1);
+        }
+        BooleanResponse response = builder.build();
+        responseStreamObserver.onNext(response);
+        responseStreamObserver.onCompleted();
+    }
+    @Override
+    public void deleteUserLike(UserLikeInfo request, StreamObserver<BooleanResponse> streamObserver) {
+        BooleanResponse.Builder builder = BooleanResponse.newBuilder();
+        int oldLength = userLikeMapper.getUserLikes(request.getUsername()).size();
+        userLikeMapper.deleteUserLike(new UserLike(request.getUsername(),request.getId()));
+        int Length = userLikeMapper.getUserLikes(request.getUsername()).size();
+        if (oldLength - 1 == Length) {
+            builder.setIsTrue(1);
+        } else {
+            builder.setIsTrue(-1);
+        }
+        BooleanResponse response = builder.build();
+        streamObserver.onNext(response);
+        streamObserver.onCompleted();
+    }
+
 
 
 

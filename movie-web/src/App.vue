@@ -25,7 +25,7 @@
             <v-list-item-title @click="goHome()"> Home </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item link>
+        <v-list-item link v-if="userInfo">
           <v-list-item-content class="white--text">
             <v-list-item-title @click="goProfile()">
               Profile

@@ -95,7 +95,7 @@ export default {
         {},
         (err, response) => {
           this.commentsList = response.array[0];
-          console.log(this.commentsList);
+          //console.log(this.commentsList);
         }
       );
     },

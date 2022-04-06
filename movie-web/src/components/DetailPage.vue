@@ -252,7 +252,7 @@ export default {
           (err, response) => {
             this.userLikeList = response.array[0];
             this.userLikeList.forEach((e)=>{
-              if(e.indexOf(this.info[0])){
+              if(e.indexOf(this.info[0])>-1){
                 this.isFavorite = true;
               }
               })

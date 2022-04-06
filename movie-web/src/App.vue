@@ -1,7 +1,9 @@
 <template>
   <v-app>
     <v-app-bar app class="grey darken-4 white--text">
-      <v-toolbar-title @click="goHome()" style="cursor: pointer"> Home </v-toolbar-title>
+      <v-toolbar-title @click="goHome()" style="cursor: pointer">
+        Home
+      </v-toolbar-title>
       <v-spacer></v-spacer>
 
       <v-btn>
@@ -23,12 +25,17 @@
             <v-list-item-title @click="goHome()"> Home </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-
         <v-list-item link>
           <v-list-item-content class="white--text">
-            <v-list-item-title v-if="userInfo == null" @click="goSignUp()">
-              Sign up
+            <v-list-item-title @click="goProfile()">
+              Profile
             </v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+
+        <v-list-item link v-if="userInfo == null">
+          <v-list-item-content class="white--text">
+            <v-list-item-title @click="goSignUp()"> Sign up </v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -84,34 +91,37 @@ export default {
     goLogin() {
       this.$router.push({ path: "/login" }).catch((err) => err);
     },
-     logOut(){
-       localStorage.removeItem('fullname');
-       localStorage.removeItem('username');
-       localStorage.removeItem('roles');
-       window.location.reload();
-    }
-
+    logOut() {
+      localStorage.removeItem("fullname");
+      localStorage.removeItem("username");
+      localStorage.removeItem("roles");
+      window.location.reload();
+    },
+    goProfile() {
+      this.$router
+        .push({
+          path: "/profile",
+        })
+        .catch((err) => err);
+    },
   },
 
   computed: {
-    
-    userInfo(){
-      if (localStorage.getItem('username') == null) {
+    userInfo() {
+      if (localStorage.getItem("username") == null) {
         return null;
-      } else{
-        return localStorage.getItem('username');
+      } else {
+        return localStorage.getItem("username");
       }
     },
 
     userName() {
-      if (localStorage.getItem('username') == null) {
+      if (localStorage.getItem("username") == null) {
         return "Guest";
       } else {
-        return localStorage.getItem('fullname');
+        return localStorage.getItem("fullname");
       }
     },
-
-
   },
 };
 </script>

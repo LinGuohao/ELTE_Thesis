@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.guohaohome.moviedb.dao.CommentMapper">
+    <select id="getCommentByMovieID" parameterType="String" resultType="com.guohaohome.moviedb.sqlEntity.Comment">
+        select * from user_comment where movieID = #{movieID}
+    </select>
+
+    <select id="getCommentByUserName" parameterType="String" resultType="com.guohaohome.moviedb.sqlEntity.Comment">
+        select * from user_comment where username = #{username}
+    </select>
+
+    <insert id="addComment" parameterType="com.guohaohome.moviedb.sqlEntity.Comment">
+        insert into user_comment (commentID,username,movieID,content) values (#{commentID,jdbcType=VARCHAR},#{username,jdbcType=VARCHAR}
+            ,#{movieID,jdbcType=VARCHAR},#{content,jdbcType=VARCHAR})
+    </insert>
+
+    <delete id="deleteComment" parameterType="String">
+        delete from user_comment where commentID = #{commentID}
+    </delete>
+
+    <select id="getCommentByCommentID" parameterType="String" resultType="com.guohaohome.moviedb.sqlEntity.Comment">
+        select * from user_comment where commentID = #{commentID}
+    </select>
+
+</mapper>

@@ -113,6 +113,17 @@ message MusicUploadRequest{
   string content = 5;
 }
 
+message CommentInfo{
+  string commentID = 1;
+  string username = 2;
+  string movieID = 3;
+  string content = 4;
+}
+message CommentListResponse{
+  repeated CommentInfo reply = 1;
+}
+
+
 
 service MoviedbService{
   rpc GetAllID (google.protobuf.Empty) returns (AllMovieIDListResponse){}
@@ -132,4 +143,8 @@ service MoviedbService{
   rpc UploadFileToOSS(FileUploadRequest) returns (BooleanResponse){}
   rpc DeleteFileFromOSS(FileDeleteRequest) returns (BooleanResponse){}
   rpc UploadMusicToOSS(MusicUploadRequest) returns (BooleanResponse){}
+  rpc GetCommentByMovieID(InfoByIDRequest) returns (CommentListResponse){}
+  rpc GetCommentByUserName(InfoByIDRequest) returns (CommentListResponse){}
+  rpc InsertComment(CommentInfo) returns (BooleanResponse){}
+  rpc DeleteComment(InfoByIDRequest) returns (BooleanResponse){}
 }

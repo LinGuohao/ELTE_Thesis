@@ -6,16 +6,10 @@ import com.aliyun.oss.OSSException;
 import com.aliyun.oss.model.ListObjectsV2Result;
 import com.aliyun.oss.model.OSSObjectSummary;
 import com.aliyun.oss.model.PutObjectRequest;
-import com.guohaohome.moviedb.dao.InfoMapper;
-import com.guohaohome.moviedb.dao.LineMapper;
-import com.guohaohome.moviedb.dao.MovieMapper;
-import com.guohaohome.moviedb.dao.UserMapper;
+import com.guohaohome.moviedb.dao.*;
 import com.guohaohome.moviedb.ossClient.OSSConfiguration;
 import com.guohaohome.moviedb.proto.*;
-import com.guohaohome.moviedb.sqlEntity.Info;
-import com.guohaohome.moviedb.sqlEntity.Line;
-import com.guohaohome.moviedb.sqlEntity.Movie;
-import com.guohaohome.moviedb.sqlEntity.User;
+import com.guohaohome.moviedb.sqlEntity.*;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
 import org.apache.commons.codec.binary.Hex;
@@ -42,11 +36,14 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
     @Autowired
     UserMapper userMapper;
     @Autowired
+    CommentMapper commentMapper;
+    @Autowired
     OSS ossClient;
     @Autowired
     OSSConfiguration ossConfiguration;
     @Autowired
     Utils utils;
+
 
     public static String SHA256Encryption(String plaintext) {
         MessageDigest messageDigest;
@@ -313,6 +310,66 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
         streamObserver.onNext(response);
         streamObserver.onCompleted();
     }
+    @Override
+    public void getCommentByMovieID(InfoByIDRequest request,StreamObserver<CommentListResponse> responseObserver){
+        CommentListResponse.Builder builder = CommentListResponse.newBuilder();
+        List<Comment> comments = commentMapper.getCommentByMovieID(request.getId());
+        for (Comment comment : comments) {
+            builder.addReply(CommentInfo.newBuilder().setCommentID(comment.getCommentID()).setUsername(comment.getUsername())
+                    .setMovieID(comment.getMovieID()).setContent(comment.getContent()));
+        }
+        CommentListResponse response = builder.build();
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+    @Override
+    public void getCommentByUserName (InfoByIDRequest request,StreamObserver<CommentListResponse> responseObserver){
+        CommentListResponse.Builder builder = CommentListResponse.newBuilder();
+        List<Comment> comments = commentMapper.getCommentByUserName(request.getId());
+        for (Comment comment : comments) {
+            builder.addReply(CommentInfo.newBuilder().setCommentID(comment.getCommentID()).setUsername(comment.getUsername())
+                    .setMovieID(comment.getMovieID()).setContent(comment.getContent()));
+        }
+        CommentListResponse response = builder.build();
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
+    @Override
+    public void insertComment(CommentInfo request,StreamObserver<BooleanResponse> responseStreamObserver){
+        BooleanResponse.Builder builder = BooleanResponse.newBuilder();
+        int oldLength = commentMapper.getCommentByUserName(request.getUsername()).size();
+        String commentID;
+        if(request.getCommentID().equals("-1")){
+            commentID = utils.generateId();
+        }else{
+            commentID = request.getCommentID();
+        }
+        Comment comment = new Comment(commentID,request.getUsername(),request.getMovieID(),request.getContent());
+        commentMapper.addComment(comment);
+        int Length = commentMapper.getCommentByUserName(request.getUsername()).size();
+        if (oldLength + 1 == Length) {
+            builder.setIsTrue(1);
+        } else {
+            builder.setIsTrue(-1);
+        }
+        BooleanResponse response = builder.build();
+        responseStreamObserver.onNext(response);
+        responseStreamObserver.onCompleted();
+    }
+    @Override
+    public void deleteComment(InfoByIDRequest request,StreamObserver<BooleanResponse> streamObserver){
+        BooleanResponse.Builder builder = BooleanResponse.newBuilder();
+        commentMapper.deleteComment(request.getId());
+        if (commentMapper.getCommentByCommentID(request.getId())==null) {
+            builder.setIsTrue(1);
+        } else {
+            builder.setIsTrue(-1);
+        }
+        BooleanResponse response = builder.build();
+        streamObserver.onNext(response);
+        streamObserver.onCompleted();
+    }
+
 
 
 }

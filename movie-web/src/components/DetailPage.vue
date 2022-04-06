@@ -128,13 +128,14 @@
       </v-carousel>
     </v-row>
     <v-row v-if="start">
-      <v-col cols="8">
+      <v-col cols="7">
         <MovieLines />
         <v-col>
           <DescriptionPage />
+          <UserComment />
         </v-col>
       </v-col>
-      <v-col cols="4">
+      <v-col cols="5" style="padding-left: 50px">
         <DetailRight> </DetailRight>
         <div class="mt-4">
           <MusicComponent />
@@ -152,16 +153,23 @@ import {
   ObjectListRequest,
   FileUploadRequest,
   FileDeleteRequest,
-  InfoRequest
+  InfoRequest,
 } from "@/proto/moviedb_pb.js";
 import { getFileExtension } from "@/utils/fileTools.js";
 import DetailRight from "./DetailRight.vue";
 import MovieLines from "./MovieLines.vue";
 import DescriptionPage from "./DescriptionPage.vue";
 import MusicComponent from "./MusicComponent.vue";
+import UserComment from "./UserComment.vue";
 
 export default {
-  components: { DetailRight, MovieLines, DescriptionPage, MusicComponent },
+  components: {
+    DetailRight,
+    MovieLines,
+    DescriptionPage,
+    MusicComponent,
+    UserComment,
+  },
   name: "DetailPage",
 
   data: () => ({
@@ -297,3 +305,4 @@ export default {
   },
 };
 </script>
+

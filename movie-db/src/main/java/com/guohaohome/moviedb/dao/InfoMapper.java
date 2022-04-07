@@ -10,4 +10,5 @@ public interface InfoMapper {
         void updateTomatoesByID (@Param("ID") String ID, @Param("newTomatoes") int newTomatoes);
         void insertInfo(Info newInfo);
         void updateInfoByID(Info newInfo , String ID);
+        void deleteInfoByID(String ID);
 }

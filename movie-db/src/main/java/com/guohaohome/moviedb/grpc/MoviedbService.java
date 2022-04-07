@@ -3,9 +3,7 @@ package com.guohaohome.moviedb.grpc;
 import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSException;
-import com.aliyun.oss.model.ListObjectsV2Result;
-import com.aliyun.oss.model.OSSObjectSummary;
-import com.aliyun.oss.model.PutObjectRequest;
+import com.aliyun.oss.model.*;
 import com.guohaohome.moviedb.dao.*;
 import com.guohaohome.moviedb.ossClient.OSSConfiguration;
 import com.guohaohome.moviedb.proto.*;
@@ -18,9 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -94,12 +95,72 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
     }
 
     @Override
-    public void insertMovie(InfoRequest request, StreamObserver<com.google.protobuf.Empty> responseObserver) {
-        Info info = new Info(request.getId(), request.getName(), request.getIMDb(), request.getTomatoes());
+    public void insertMovie(InfoRequest request, StreamObserver<MovieID> responseObserver) {
+        String id;
+        MovieID.Builder builder = MovieID.newBuilder();
+        if(request.getId().equals("-1")){
+            id = utils.generateId();
+        }else{
+            id = request.getId();
+        }
+        Info info = new Info(id, request.getName(), request.getIMDb(), request.getTomatoes());
         infoMapper.insertInfo(info);
         movieMapper.insertMovie(new Movie(info.getId(), info.getName()));
-
+        builder.setId(id);
+        MovieID movieID = builder.build();
+        responseObserver.onNext(movieID);
+        responseObserver.onCompleted();
     }
+    @Override
+    public void deleteMovieByID(MovieID request,StreamObserver<BooleanResponse> streamObserver){
+        BooleanResponse.Builder builder = BooleanResponse.newBuilder();
+        try {
+            String nextMarker = null;
+            ObjectListing objectListing = null;
+            do {
+                ListObjectsRequest listObjectsRequest = new ListObjectsRequest(ossConfiguration.getBucketName())
+                        .withPrefix(request.getId() + "/")
+                        .withMarker(nextMarker);
+
+                objectListing = ossClient.listObjects(listObjectsRequest);
+                if (objectListing.getObjectSummaries().size() > 0) {
+                    List<String> keys = new ArrayList<String>();
+                    for (OSSObjectSummary s : objectListing.getObjectSummaries()) {
+                        System.out.println("key name: " + s.getKey());
+                        keys.add(s.getKey());
+                    }
+                    DeleteObjectsRequest deleteObjectsRequest = new DeleteObjectsRequest(ossConfiguration.getBucketName()).withKeys(keys).withEncodingType("url");
+                    DeleteObjectsResult deleteObjectsResult = ossClient.deleteObjects(deleteObjectsRequest);
+                    List<String> deletedObjects = deleteObjectsResult.getDeletedObjects();
+                    try {
+                        for (String obj : deletedObjects) {
+                            String deleteObj = URLDecoder.decode(obj, "UTF-8");
+                            System.out.println(deleteObj);
+                        }
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                nextMarker = objectListing.getNextMarker();
+            } while (objectListing.isTruncated());
+        }catch(Exception e){
+            e.printStackTrace();
+            builder.setIsTrue(-1);
+        }
+        movieMapper.deleteMovieByID(request.getId());
+        infoMapper.deleteInfoByID(request.getId());
+        if(movieMapper.getNameByID(request.getId()) == null && infoMapper.getInfoByID(request.getId())==null){
+            builder.setIsTrue(1);
+        }else {
+            builder.setIsTrue(-1);
+        }
+        BooleanResponse response = builder.build();
+        streamObserver.onNext(response);
+        streamObserver.onCompleted();
+    }
+
+
 
     @Override
     public void getOssObjectList(ObjectListRequest request, StreamObserver<ObjectListResponse> responseObserver) {
@@ -266,9 +327,16 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
     @Override
     public void uploadFileToOSS(FileUploadRequest request, StreamObserver<BooleanResponse> streamObserver) {
         BooleanResponse.Builder builder = BooleanResponse.newBuilder();
+        String filename;
+        if(request.getObjectName().equals("-1")){
+            filename =  utils.generateFileName(request.getType());
+        }else{
+            filename = request.getObjectName()+"."+request.getType();
+            //System.out.println(filename);
+        }
         try {
             PutObjectRequest putObjectRequest = new PutObjectRequest(ossConfiguration.getBucketName()
-                    , request.getObjectPath() + utils.generateFileName(request.getType()), Utils.base64ToFile(request.getContent()));
+                    , request.getObjectPath() + filename, Utils.base64ToFile(request.getContent()));
             ossClient.putObject(putObjectRequest);
             builder.setIsTrue(1);
         } catch (OSSException | ClientException exception) {

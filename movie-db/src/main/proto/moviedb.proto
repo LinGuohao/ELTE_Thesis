@@ -103,6 +103,7 @@ message FileUploadRequest{
   string objectPath = 1;
   string type = 2;
   string content = 3;
+  string objectName = 4;
 }
 
 message FileDeleteRequest{
@@ -141,7 +142,8 @@ service MoviedbService{
   rpc GetAllID (google.protobuf.Empty) returns (AllMovieIDListResponse){}
   rpc GetInfoByID(InfoByIDRequest) returns (InfoResponse) {}
   rpc UpdateByID(InfoRequest) returns (google.protobuf.Empty){}
-  rpc InsertMovie(InfoRequest) returns (google.protobuf.Empty){}
+  rpc InsertMovie(InfoRequest) returns (MovieID){}
+  rpc DeleteMovieByID(MovieID) returns(BooleanResponse){}
   rpc GetOssObjectList(ObjectListRequest) returns(ObjectListResponse){}
   rpc GetLines(InfoByIDRequest) returns(LineListResponse){}
   rpc InsertLine(LineList) returns (BooleanResponse){}

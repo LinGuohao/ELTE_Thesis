@@ -46,6 +46,9 @@
             <v-icon dense style="cursor: pointer" @click="upload()"
               >mdi-tray-arrow-up</v-icon
             >
+            <v-icon dense style="cursor: pointer" @click="deleteDialog()"
+              >mdi-trash-can</v-icon
+            >
           </v-row>
         </v-alert>
       </div>
@@ -138,6 +141,26 @@
         </v-card>
       </v-dialog>
 
+      <v-dialog v-model="showDelete" max-width="290">
+        <v-card>
+          <v-card-title class="text-h5"> Delete this movie? </v-card-title>
+          <v-card-text>
+            Are you sure you want to delete this movie, all information about
+            this movie will be deleted and cannot be recovered
+          </v-card-text>
+
+          <v-card-actions>
+            <v-spacer></v-spacer>
+
+            <v-btn color="green darken-1" text @click="showDelete = false">
+              Cancel
+            </v-btn>
+
+            <v-btn color="red" text @click="deleteMovie()"> Delete </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
       <v-carousel
         cycle
         height="500"
@@ -145,6 +168,11 @@
         show-arrows-on-hover
         delimiter-icon="mdi-minus"
       >
+        <v-sheet color="light-green lighten-2" height="100%" tile v-if="images.length == 0">
+          <v-row class="fill-height" align="center" justify="center">
+            <div class="text-h2">No photos yet</div>
+          </v-row>
+        </v-sheet>
         <v-carousel-item v-for="(image, index) in images" :key="index">
           <v-sheet height="100%">
             <v-row class="fill-height" align="center" justify="center">
@@ -183,6 +211,7 @@ import {
   InfoRequest,
   UsernameRequest,
   UserLikeInfo,
+  MovieID,
 } from "@/proto/moviedb_pb.js";
 import { getFileExtension } from "@/utils/fileTools.js";
 import DetailRight from "./DetailRight.vue";
@@ -218,6 +247,7 @@ export default {
     pList: [],
     isFavorite: false,
     userLikeList: [],
+    showDelete: false,
   }),
 
   created: function () {
@@ -251,11 +281,11 @@ export default {
           {},
           (err, response) => {
             this.userLikeList = response.array[0];
-            this.userLikeList.forEach((e)=>{
-              if(e.indexOf(this.info[0])>-1){
+            this.userLikeList.forEach((e) => {
+              if (e.indexOf(this.info[0]) > -1) {
                 this.isFavorite = true;
               }
-              })
+            });
           }
         );
       }
@@ -330,7 +360,8 @@ export default {
           new FileUploadRequest()
             .setObjectpath(this.info[0] + "/screenshot/")
             .setType(getFileExtension(this.photoInfo))
-            .setContent(e.target.result),
+            .setContent(e.target.result)
+            .setObjectname("-1"),
           {},
           (err, response) => {
             if (response.array[0] == -1) {
@@ -347,22 +378,42 @@ export default {
         new UserLikeInfo().setUsername(this.userInfo).setId(this.info[0]),
         {},
         (err, response) => {
-          if(response.array[0] == 1){
+          if (response.array[0] == 1) {
             this.isFavorite = true;
           }
         }
       );
     },
     deleteFavorite() {
-       this.$backend.deleteUserLike(
+      this.$backend.deleteUserLike(
         new UserLikeInfo().setUsername(this.userInfo).setId(this.info[0]),
         {},
         (err, response) => {
-          if(response.array[0] == 1){
+          if (response.array[0] == 1) {
             this.isFavorite = false;
           }
         }
       );
+    },
+    deleteDialog() {
+      this.showDelete = true;
+    },
+
+    deleteMovie() {
+      this.$backend.deleteMovieByID(
+        new MovieID().setId(this.info[0]),
+        {},
+        () => {
+          this.goHome();
+        }
+      );
+    },
+    goHome() {
+      this.$router
+        .push({
+          path: "/",
+        })
+        .catch((err) => err);
     },
   },
   computed: {

@@ -77,6 +77,18 @@
 
     <v-card color="pink darken-3" dark flat outlined shaped>
       <v-window v-model="onboarding">
+        <v-window-item v-if="length == 0">
+          <v-card color="transparent" height="200">
+            <v-row class="fill-height" align="center" justify="center">
+              <v-card-text
+                class="text-center"
+                style="font-family: Times New Roman"
+              >
+                No data yet
+              </v-card-text>
+            </v-row>
+          </v-card>
+        </v-window-item>
         <v-window-item v-for="n in length" :key="`card-${n}`">
           <v-card color="transparent" height="200">
             <v-row class="fill-height" align="center" justify="center">

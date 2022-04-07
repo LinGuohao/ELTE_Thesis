@@ -28,4 +28,8 @@
                             values (#{id,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR},
                                     #{IMDb,jdbcType = DOUBLE},#{Tomatoes,jdbcType = INTEGER})
     </insert>
+
+    <delete id="deleteInfoByID" parameterType="String">
+        delete from info where id = #{ID}
+    </delete>
 </mapper>

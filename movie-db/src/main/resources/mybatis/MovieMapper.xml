@@ -22,4 +22,8 @@
     <select id="updateNameByID">
         update movie set name = #{newName} where ID = #{ID}
     </select>
+
+    <delete id="deleteMovieByID" parameterType="String">
+        delete from movie where id = #{ID}
+    </delete>
 </mapper>

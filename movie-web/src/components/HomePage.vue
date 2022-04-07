@@ -2,37 +2,39 @@
   <v-container>
     <v-row v-if="info.length == movies.length">
       <template v-for="(n, index) in movies">
-      <v-col  cols="4" v-if="searchMethod(info[index][1])" :key="index">
-        <v-card height="400" class="mx-auto" elevation="10">
-          <v-img
-            class="white--text align-end"
-            height="200px"
-            :src="covers[index]"
-          >
-            <v-card-title>{{ info[index][1] }}</v-card-title>
-          </v-img>
+        <v-col cols="4" v-if="searchMethod(info[index][1])" :key="index">
+          <v-card height="400" class="mx-auto" elevation="10">
+            <v-img
+              class="white--text align-end"
+              height="200px"
+              :src="covers[index]"
+            >
+              <v-card-title>{{ info[index][1] }}</v-card-title>
+            </v-img>
 
-          <v-card-subtitle class="pb-0"> Director and Actors: </v-card-subtitle>
+            <v-card-subtitle class="pb-0">
+              Director and Actors:
+            </v-card-subtitle>
 
-          <v-card-text class="text--primary pb-0">
-            <div>{{ n.director }}</div>
-            <div>{{ n.actors }}</div>
-          </v-card-text>
+            <v-card-text class="text--primary pb-0">
+              <div>{{ n.director }}</div>
+              <div>{{ n.actors }}</div>
+            </v-card-text>
 
-          <v-card-subtitle class="pb-0"> Rating: </v-card-subtitle>
-          <v-card-text class="text--primary pb-0">
-            <div>
-              IMDb: {{ info[index][2] }} Rotten Tomatoes: {{ info[index][3] }}
-            </div>
-          </v-card-text>
+            <v-card-subtitle class="pb-0"> Rating: </v-card-subtitle>
+            <v-card-text class="text--primary pb-0">
+              <div>
+                IMDb: {{ info[index][2] }} Rotten Tomatoes: {{ info[index][3] }}
+              </div>
+            </v-card-text>
 
-          <v-card-actions>
-            <v-btn color="orange" @click="goDetail(info[index][0])">
-              See more
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-col>
+            <v-card-actions>
+              <v-btn color="orange" @click="goDetail(info[index][0])">
+                See more
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-col>
       </template>
     </v-row>
   </v-container>
@@ -54,7 +56,7 @@ export default {
     movies: [],
     info: [],
     covers: [],
-    moviesInfo:[],
+    moviesInfo: [],
   }),
 
   created: function () {
@@ -79,9 +81,9 @@ export default {
             this.movies = res.map((item) => item.data);
             //console.log(this.movies);
           });
-          Promise.all(infoList).then((res) =>{
+          Promise.all(infoList).then((res) => {
             this.info = res.map((item) => item);
-          })
+          });
         }
       );
     },
@@ -118,23 +120,24 @@ export default {
         },
       });
     },
-    searchMethod(movieName){
-      if(this.searchText == ""){
-        return true
-      }else{
-        if(movieName.toLowerCase().indexOf(this.searchText.toLowerCase()) !== -1){
+    searchMethod(movieName) {
+      if (this.searchText == "") {
+        return true;
+      } else {
+        if (
+          movieName.toLowerCase().indexOf(this.searchText.toLowerCase()) !== -1
+        ) {
           return true;
-        }else{
+        } else {
           return false;
         }
-
       }
-    }
+    },
   },
   computed: {
-    searchText(){
-      return  this.$store.state.searchText;
-    }
-  }
+    searchText() {
+      return this.$store.state.searchText;
+    },
+  },
 };
 </script>

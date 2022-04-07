@@ -262,13 +262,13 @@ proto.com.guohaohome.moviedb.proto.MoviedbServicePromiseClient.prototype.updateB
  * @const
  * @type {!grpc.web.MethodDescriptor<
  *   !proto.com.guohaohome.moviedb.proto.InfoRequest,
- *   !proto.google.protobuf.Empty>}
+ *   !proto.com.guohaohome.moviedb.proto.MovieID>}
  */
 const methodDescriptor_MoviedbService_InsertMovie = new grpc.web.MethodDescriptor(
   '/com.guohaohome.moviedb.proto.MoviedbService/InsertMovie',
   grpc.web.MethodType.UNARY,
   proto.com.guohaohome.moviedb.proto.InfoRequest,
-  google_protobuf_empty_pb.Empty,
+  proto.com.guohaohome.moviedb.proto.MovieID,
   /**
    * @param {!proto.com.guohaohome.moviedb.proto.InfoRequest} request
    * @return {!Uint8Array}
@@ -276,7 +276,7 @@ const methodDescriptor_MoviedbService_InsertMovie = new grpc.web.MethodDescripto
   function(request) {
     return request.serializeBinary();
   },
-  google_protobuf_empty_pb.Empty.deserializeBinary
+  proto.com.guohaohome.moviedb.proto.MovieID.deserializeBinary
 );
 
 
@@ -285,9 +285,9 @@ const methodDescriptor_MoviedbService_InsertMovie = new grpc.web.MethodDescripto
  *     request proto
  * @param {?Object<string, string>} metadata User defined
  *     call metadata
- * @param {function(?grpc.web.RpcError, ?proto.google.protobuf.Empty)}
+ * @param {function(?grpc.web.RpcError, ?proto.com.guohaohome.moviedb.proto.MovieID)}
  *     callback The callback function(error, response)
- * @return {!grpc.web.ClientReadableStream<!proto.google.protobuf.Empty>|undefined}
+ * @return {!grpc.web.ClientReadableStream<!proto.com.guohaohome.moviedb.proto.MovieID>|undefined}
  *     The XHR Node Readable Stream
  */
 proto.com.guohaohome.moviedb.proto.MoviedbServiceClient.prototype.insertMovie =
@@ -306,7 +306,7 @@ proto.com.guohaohome.moviedb.proto.MoviedbServiceClient.prototype.insertMovie =
  *     request proto
  * @param {?Object<string, string>=} metadata User defined
  *     call metadata
- * @return {!Promise<!proto.google.protobuf.Empty>}
+ * @return {!Promise<!proto.com.guohaohome.moviedb.proto.MovieID>}
  *     Promise that resolves to the response
  */
 proto.com.guohaohome.moviedb.proto.MoviedbServicePromiseClient.prototype.insertMovie =
@@ -316,6 +316,67 @@ proto.com.guohaohome.moviedb.proto.MoviedbServicePromiseClient.prototype.insertM
       request,
       metadata || {},
       methodDescriptor_MoviedbService_InsertMovie);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.com.guohaohome.moviedb.proto.MovieID,
+ *   !proto.com.guohaohome.moviedb.proto.BooleanResponse>}
+ */
+const methodDescriptor_MoviedbService_DeleteMovieByID = new grpc.web.MethodDescriptor(
+  '/com.guohaohome.moviedb.proto.MoviedbService/DeleteMovieByID',
+  grpc.web.MethodType.UNARY,
+  proto.com.guohaohome.moviedb.proto.MovieID,
+  proto.com.guohaohome.moviedb.proto.BooleanResponse,
+  /**
+   * @param {!proto.com.guohaohome.moviedb.proto.MovieID} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.com.guohaohome.moviedb.proto.BooleanResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.com.guohaohome.moviedb.proto.MovieID} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.com.guohaohome.moviedb.proto.BooleanResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.com.guohaohome.moviedb.proto.BooleanResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.com.guohaohome.moviedb.proto.MoviedbServiceClient.prototype.deleteMovieByID =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/com.guohaohome.moviedb.proto.MoviedbService/DeleteMovieByID',
+      request,
+      metadata || {},
+      methodDescriptor_MoviedbService_DeleteMovieByID,
+      callback);
+};
+
+
+/**
+ * @param {!proto.com.guohaohome.moviedb.proto.MovieID} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.com.guohaohome.moviedb.proto.BooleanResponse>}
+ *     Promise that resolves to the response
+ */
+proto.com.guohaohome.moviedb.proto.MoviedbServicePromiseClient.prototype.deleteMovieByID =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/com.guohaohome.moviedb.proto.MoviedbService/DeleteMovieByID',
+      request,
+      metadata || {},
+      methodDescriptor_MoviedbService_DeleteMovieByID);
 };
 
 

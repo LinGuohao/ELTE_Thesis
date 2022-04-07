@@ -3819,7 +3819,8 @@ proto.com.guohaohome.moviedb.proto.FileUploadRequest.toObject = function(include
   var f, obj = {
     objectpath: jspb.Message.getFieldWithDefault(msg, 1, ""),
     type: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    content: jspb.Message.getFieldWithDefault(msg, 3, "")
+    content: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    objectname: jspb.Message.getFieldWithDefault(msg, 4, "")
   };
 
   if (includeInstance) {
@@ -3868,6 +3869,10 @@ proto.com.guohaohome.moviedb.proto.FileUploadRequest.deserializeBinaryFromReader
       var value = /** @type {string} */ (reader.readString());
       msg.setContent(value);
       break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setObjectname(value);
+      break;
     default:
       reader.skipField();
       break;
@@ -3915,6 +3920,13 @@ proto.com.guohaohome.moviedb.proto.FileUploadRequest.serializeBinaryToWriter = f
   if (f.length > 0) {
     writer.writeString(
       3,
+      f
+    );
+  }
+  f = message.getObjectname();
+  if (f.length > 0) {
+    writer.writeString(
+      4,
       f
     );
   }
@@ -3972,6 +3984,24 @@ proto.com.guohaohome.moviedb.proto.FileUploadRequest.prototype.getContent = func
  */
 proto.com.guohaohome.moviedb.proto.FileUploadRequest.prototype.setContent = function(value) {
   return jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+/**
+ * optional string objectName = 4;
+ * @return {string}
+ */
+proto.com.guohaohome.moviedb.proto.FileUploadRequest.prototype.getObjectname = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/**
+ * @param {string} value
+ * @return {!proto.com.guohaohome.moviedb.proto.FileUploadRequest} returns this
+ */
+proto.com.guohaohome.moviedb.proto.FileUploadRequest.prototype.setObjectname = function(value) {
+  return jspb.Message.setProto3StringField(this, 4, value);
 };
 
 

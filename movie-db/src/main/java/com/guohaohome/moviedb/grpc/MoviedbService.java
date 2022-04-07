@@ -414,6 +414,22 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
         streamObserver.onNext(response);
         streamObserver.onCompleted();
     }
+    @Override
+    public void getFavoriteMovieList(UsernameRequest request, StreamObserver<InfoList> responseObserver){
+        InfoList.Builder builder = InfoList.newBuilder();
+        List<UserLike> userLikeList = userLikeMapper.getUserLikes(request.getUsername());
+        List<String> movieID =  movieMapper.getAllID();
+        for (UserLike userLike : userLikeList) {
+            if(movieID.contains(userLike.getId())){
+                Info info = infoMapper.getInfoByID(userLike.getId());
+                builder.addReply(InfoResponse.newBuilder().setId(info.getId()).setName(info.getName())
+                        .setIMDb(info.getIMDb()).setTomatoes(info.getTomatoes()));
+            }
+        }
+        InfoList response = builder.build();
+        responseObserver.onNext(response);
+        responseObserver.onCompleted();
+    }
 
 
 

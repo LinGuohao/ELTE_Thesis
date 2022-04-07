@@ -29,6 +29,10 @@ message InfoRequest{
   int32 Tomatoes = 4;
 }
 
+message InfoList{
+  repeated InfoResponse reply = 1;
+}
+
 message ObjectList{
   string ObjectName = 1;
 }
@@ -158,4 +162,5 @@ service MoviedbService{
   rpc GetUserLikes(UsernameRequest) returns(UserLikeListResponse){}
   rpc InsertUserLike(UserLikeInfo) returns (BooleanResponse){}
   rpc DeleteUserLike(UserLikeInfo) returns (BooleanResponse){}
+  rpc GetFavoriteMovieList(UsernameRequest) returns (InfoList){}
 }

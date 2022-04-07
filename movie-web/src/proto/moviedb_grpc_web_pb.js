@@ -1539,5 +1539,66 @@ proto.com.guohaohome.moviedb.proto.MoviedbServicePromiseClient.prototype.deleteU
 };
 
 
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.com.guohaohome.moviedb.proto.UsernameRequest,
+ *   !proto.com.guohaohome.moviedb.proto.InfoList>}
+ */
+const methodDescriptor_MoviedbService_GetFavoriteMovieList = new grpc.web.MethodDescriptor(
+  '/com.guohaohome.moviedb.proto.MoviedbService/GetFavoriteMovieList',
+  grpc.web.MethodType.UNARY,
+  proto.com.guohaohome.moviedb.proto.UsernameRequest,
+  proto.com.guohaohome.moviedb.proto.InfoList,
+  /**
+   * @param {!proto.com.guohaohome.moviedb.proto.UsernameRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.com.guohaohome.moviedb.proto.InfoList.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.com.guohaohome.moviedb.proto.UsernameRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.com.guohaohome.moviedb.proto.InfoList)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.com.guohaohome.moviedb.proto.InfoList>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.com.guohaohome.moviedb.proto.MoviedbServiceClient.prototype.getFavoriteMovieList =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/com.guohaohome.moviedb.proto.MoviedbService/GetFavoriteMovieList',
+      request,
+      metadata || {},
+      methodDescriptor_MoviedbService_GetFavoriteMovieList,
+      callback);
+};
+
+
+/**
+ * @param {!proto.com.guohaohome.moviedb.proto.UsernameRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.com.guohaohome.moviedb.proto.InfoList>}
+ *     Promise that resolves to the response
+ */
+proto.com.guohaohome.moviedb.proto.MoviedbServicePromiseClient.prototype.getFavoriteMovieList =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/com.guohaohome.moviedb.proto.MoviedbService/GetFavoriteMovieList',
+      request,
+      metadata || {},
+      methodDescriptor_MoviedbService_GetFavoriteMovieList);
+};
+
+
 module.exports = proto.com.guohaohome.moviedb.proto;
 

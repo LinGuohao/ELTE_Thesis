@@ -5,10 +5,9 @@
         Home
       </v-toolbar-title>
       <v-spacer></v-spacer>
-
-      <v-btn>
-        <v-icon>mdi-magnify</v-icon>
-      </v-btn>
+        <v-col cols="12" sm="6" md="3">
+          <v-text-field label="Search" solo class="pt-8" v-model="searchText"> <v-icon slot="append" color="red"> mdi-magnify </v-icon></v-text-field>
+        </v-col>
     </v-app-bar>
     <v-navigation-drawer app class="grey darken-4">
       <v-divider></v-divider>
@@ -71,6 +70,7 @@ export default {
       ["mdi-delete", "Trash"],
       ["mdi-alert-octagon", "Spam"],
     ],
+    searchText: null
   }),
 
   methods: {
@@ -104,6 +104,12 @@ export default {
         })
         .catch((err) => err);
     },
+  },
+
+  watch:{
+    searchText(newValue){
+       this.$store.state.searchText = newValue;
+    }
   },
 
   computed: {

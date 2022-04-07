@@ -1,7 +1,8 @@
 <template>
   <v-container>
     <v-row v-if="info.length == movies.length">
-      <v-col v-for="(n, index) in movies" :key="index" cols="4">
+      <template v-for="(n, index) in movies">
+      <v-col  cols="4" v-if="searchMethod(info[index][1])" :key="index">
         <v-card height="400" class="mx-auto" elevation="10">
           <v-img
             class="white--text align-end"
@@ -32,13 +33,13 @@
           </v-card-actions>
         </v-card>
       </v-col>
+      </template>
     </v-row>
   </v-container>
 </template>
 
 <script>
 var google_protobuf_empty_pb = require("google-protobuf/google/protobuf/empty_pb.js");
-import { MoviedbServiceClient } from "@/proto/moviedb_grpc_web_pb.js";
 import { InfoByIDRequest } from "@/proto/moviedb_pb.js";
 //import  {AllMovieIDListResponse} from "@/proto/moviedb_pb.js"
 
@@ -53,16 +54,16 @@ export default {
     movies: [],
     info: [],
     covers: [],
+    moviesInfo:[],
   }),
 
   created: function () {
-    this.client = new MoviedbServiceClient("http://localhost:9080", null, null);
     this.initPage();
   },
   methods: {
     initPage() {
       //this.respone = new AllMovieIDListResponse();
-      this.client.getAllID(
+      this.$backend.getAllID(
         new google_protobuf_empty_pb.Empty(),
         {},
         (err, response) => {
@@ -95,7 +96,7 @@ export default {
 
     getInfo(id) {
       return new Promise((reslove) =>
-        this.client.getInfoByID(
+        this.$backend.getInfoByID(
           new InfoByIDRequest().setId(id),
           {},
           (err, response) => {
@@ -117,6 +118,23 @@ export default {
         },
       });
     },
+    searchMethod(movieName){
+      if(this.searchText == ""){
+        return true
+      }else{
+        if(movieName.toLowerCase().indexOf(this.searchText.toLowerCase()) !== -1){
+          return true;
+        }else{
+          return false;
+        }
+
+      }
+    }
   },
+  computed: {
+    searchText(){
+      return  this.$store.state.searchText;
+    }
+  }
 };
 </script>

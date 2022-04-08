@@ -1,6 +1,7 @@
 package com.guohaohome.moviedb.sqlApiTest;
 
 
+import com.guohaohome.moviedb.controller.Init;
 import com.guohaohome.moviedb.dao.InfoMapper;
 import com.guohaohome.moviedb.dao.MovieMapper;
 import com.guohaohome.moviedb.sqlEntity.Info;
@@ -10,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;

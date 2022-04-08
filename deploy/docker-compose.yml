@@ -1,0 +1,28 @@
+version: "3"
+services:
+  frontend:
+    build: 
+      context: movie-web
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+      - "9080:9080"
+    depends_on:
+      - "database"
+      - "backend"
+  backend:
+    build: 
+      context: movie-db
+      dockerfile: Dockerfile
+    ports:
+      - "8888:8888"
+    depends_on:
+      - "database"
+    command: ./wait-for-it.sh database:3306 -t 30 -- java -jar /app.jar --spring.profiles.active=dev
+  database:
+    build: 
+      context: mysql
+      dockerfile: Dockerfile
+    ports:
+      - "3307:3306"
+    

@@ -2,6 +2,7 @@ package com.guohaohome.moviedb.grpcTest;
 
 
 
+import com.guohaohome.moviedb.controller.Init;
 import com.guohaohome.moviedb.dao.InfoMapper;
 import com.guohaohome.moviedb.dao.MovieMapper;
 import com.guohaohome.moviedb.grpc.MoviedbService;
@@ -14,6 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -29,7 +31,6 @@ import static org.junit.Assert.assertEquals;
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
 @SpringBootTest
-
 @MapperScan("com/guohaohome/moviedb/dao")
 public class MoviedbServiceUnitTests {
     @Autowired

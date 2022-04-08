@@ -8,3 +8,6 @@ spring:
     data: classpath:sql/data.sql
 mybatis:
   mapper-locations: classpath:mybatis/*.xml
+
+lifeCycle:
+  stage: test

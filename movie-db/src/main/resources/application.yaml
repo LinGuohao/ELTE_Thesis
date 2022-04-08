@@ -14,3 +14,6 @@ aliyun:
   accessKeyId: LTAI5tLGTNLk9oDuRfty5Qta
   accessKeySecret: xfn8jzOzI5SQ6H1p2vmDoOSdmChUti
   bucket: movie-db
+
+lifeCycle:
+  stage: dev

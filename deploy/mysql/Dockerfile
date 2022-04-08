@@ -1,7 +1,4 @@
 FROM mysql:5.7
-
-#设置免密登录
-ENV MYSQL_ALLOW_EMPTY_PASSWORD yes
-
-
+ENV MYSQL_ROOT_PASSWORD="movedbmysql"
+CMD ["--lower_case_table_names= 1"]
 COPY movie_db.sql /docker-entrypoint-initdb.d

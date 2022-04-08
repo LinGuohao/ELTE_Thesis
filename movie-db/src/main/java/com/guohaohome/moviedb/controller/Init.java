@@ -9,17 +9,18 @@ import com.guohaohome.moviedb.dao.MovieMapper;
 import com.guohaohome.moviedb.dao.UserLikeMapper;
 import com.guohaohome.moviedb.ossClient.OSSConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Component
+@ConditionalOnExpression("'${lifeCycle.stage}'.equals('dev')")
 public class Init {
     @Autowired
     MovieMapper movieMapper;

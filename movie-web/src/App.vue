@@ -142,6 +142,7 @@ export default {
   }),
 
   created: function () {
+    console.log(process.env.VUE_APP_HOSTNAME);
     this.init();
   },
   methods: {

@@ -7,7 +7,7 @@ import { MoviedbServiceClient } from "@/proto/moviedb_grpc_web_pb.js";
 import store from './store';
 Vue.config.productionTip = false;
 Vue.prototype.$axios = axios;
-Vue.prototype.$backend = new MoviedbServiceClient("http://localhost:9080", null, null);
+Vue.prototype.$backend = new MoviedbServiceClient("http://"+"localhost"+":9080", null, null);
 Vue.prototype.$ossPrefix = "https://movie-db.oss-eu-west-1.aliyuncs.com/";
 let OSS = require('ali-oss')
 

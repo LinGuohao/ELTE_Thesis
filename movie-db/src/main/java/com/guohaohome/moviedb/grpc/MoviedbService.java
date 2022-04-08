@@ -150,7 +150,10 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
         }
         movieMapper.deleteMovieByID(request.getId());
         infoMapper.deleteInfoByID(request.getId());
-        if(movieMapper.getNameByID(request.getId()) == null && infoMapper.getInfoByID(request.getId())==null){
+        userLikeMapper.deleteUserLikeByID(request.getId());
+        commentMapper.deleteCommentByMovieId(request.getId());
+        if(movieMapper.getNameByID(request.getId()) == null && infoMapper.getInfoByID(request.getId())==null &&
+            commentMapper.getCommentByMovieID(request.getId()).size()==0){
             builder.setIsTrue(1);
         }else {
             builder.setIsTrue(-1);

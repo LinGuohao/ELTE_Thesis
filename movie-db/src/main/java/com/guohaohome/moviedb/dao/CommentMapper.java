@@ -10,4 +10,5 @@ public interface CommentMapper {
     void addComment(Comment comment);
     void deleteComment(String commentID);
     Comment getCommentByCommentID(String CommentID);
+    void deleteCommentByMovieId(String movieID);
 }

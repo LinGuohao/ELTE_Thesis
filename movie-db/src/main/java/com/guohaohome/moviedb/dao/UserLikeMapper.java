@@ -8,4 +8,5 @@ public interface UserLikeMapper {
     List<UserLike> getUserLikes(String username);
     void insertUserLike(UserLike userLike);
     void deleteUserLike(UserLike userLike);
+    void deleteUserLikeByID(String ID);
 }

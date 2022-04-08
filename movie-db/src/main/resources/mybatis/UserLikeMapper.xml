@@ -15,4 +15,8 @@
     <delete id="deleteUserLike" parameterType="com.guohaohome.moviedb.sqlEntity.UserLike">
         delete from user_like where username = #{username} and id = #{id}
     </delete>
+
+    <delete id="deleteUserLikeByID" parameterType="String">
+        delete from user_like where id = #{ID}
+    </delete>
 </mapper>

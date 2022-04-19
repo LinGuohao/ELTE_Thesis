@@ -7,15 +7,19 @@ import { MoviedbServiceClient } from "@/proto/moviedb_grpc_web_pb.js";
 import store from './store';
 Vue.config.productionTip = false;
 Vue.prototype.$axios = axios;
-Vue.prototype.$backend = new MoviedbServiceClient("http://"+"localhost"+":9080", null, null);
+if (process.env.VUE_APP_HOSTNAME != '') {
+  Vue.prototype.$backend = new MoviedbServiceClient("http://" + process.env.VUE_APP_HOSTNAME + ":9080", null, null);
+} else {
+  Vue.prototype.$backend = new MoviedbServiceClient("http://" + window.location.href.split("//")[1].split(":")[0] + ":9080", null, null);
+}
 Vue.prototype.$ossPrefix = "https://movie-db.oss-eu-west-1.aliyuncs.com/";
 let OSS = require('ali-oss')
 
 let client = new OSS({
   endpoint: "oss-eu-west-1.aliyuncs.com",
   accessKeyId: "LTAI5tLGTNLk9oDuRfty5Qta",
-  accessKeySecret:"xfn8jzOzI5SQ6H1p2vmDoOSdmChUti",
-  bucket:"movie-db"
+  accessKeySecret: "xfn8jzOzI5SQ6H1p2vmDoOSdmChUti",
+  bucket: "movie-db"
 })
 
 Vue.prototype.$ossClient = client

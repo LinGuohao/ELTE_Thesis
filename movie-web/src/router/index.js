@@ -33,10 +33,18 @@ const router = new VueRouter({
       path:"/profile",
       name:"Profile",
       component: ProfilePage,
+      beforeEnter: (to, from, next) => {
+        if(localStorage.getItem("username") ==null){
+          return next('/login')
+        }
+        next()
+      }
     }
 
 
-  ]
+
+  ],
+
 })
 
 

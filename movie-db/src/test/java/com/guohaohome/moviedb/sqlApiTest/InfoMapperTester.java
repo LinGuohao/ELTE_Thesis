@@ -15,7 +15,8 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import static org.junit.Assert.assertEquals;
+
+import static org.junit.Assert.*;
 
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
@@ -76,6 +77,17 @@ public class InfoMapperTester {
         assertEquals(name,testInfo.getName());
         assertEquals(IMDb,testInfo.getIMDb(),0.1);
         assertEquals(Tomatoes,testInfo.getTomatoes());
+    }
+    @Test
+    public void testDeleteInfoByID(){
+        Info info = new Info("testDeleteInfoByIDID","testDeleteInfoByIDName",10.0
+                ,10);
+        infoMapper.insertInfo(info);
+        info = infoMapper.getInfoByID("testDeleteInfoByIDID");
+        assertNotNull(info);
+        infoMapper.deleteInfoByID("testDeleteInfoByIDID");
+        info = infoMapper.getInfoByID("testDeleteInfoByIDID");
+        assertNull(info);
     }
 }
 

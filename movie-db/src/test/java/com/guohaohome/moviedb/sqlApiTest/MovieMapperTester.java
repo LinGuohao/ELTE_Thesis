@@ -17,15 +17,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @MapperScan("com/guohaohome/moviedb/dao")
-@FixMethodOrder(MethodSorters.JVM)
 public class MovieMapperTester {
 
     @Autowired
@@ -62,7 +60,29 @@ public class MovieMapperTester {
         List<String> allId = movieMapper.getAllID();
         assert (allId.contains("1234567"));
         assert (allId.contains("12345"));
+    }
+
+    @Test
+    public void testUpdateNameByID(){
+        String name = movieMapper.getNameByID("testMovieId");
+        assertEquals("testMovieName",name);
+        movieMapper.updateNameByID("testMovieId","testMovieName2");
+        name = movieMapper.getNameByID("testMovieId");
+        assertEquals("testMovieName2",name);
+        movieMapper.updateNameByID("testMovieId","testMovieName");
 
     }
+    @Test
+    public void testDeleteMovieByID(){
+        Movie movie = new Movie("testDeleteMovieByIDID","testDeleteMovieByIDName");
+        movieMapper.insertMovie(movie);
+        String name = movieMapper.getNameByID("testDeleteMovieByIDID");
+        assertEquals("testDeleteMovieByIDName",name);
+        movieMapper.deleteMovieByID("testDeleteMovieByIDID");
+        name = movieMapper.getNameByID("testDeleteMovieByIDID");
+        assertNull(name);
+
+    }
+
 
 }

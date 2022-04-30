@@ -66,20 +66,20 @@ public class MoviedbServiceUnitTests {
         assertNull(responseObserver.getError());
         InfoResponse infoResponse = responseObserver.getValues().get(0);
         assertEquals("23456789",infoResponse.getId());
-        assertEquals("Grpc_getInfoByID", infoResponse.getName());
+        assertEquals("grpc_getInfoByID", infoResponse.getName());
         assertEquals(9.1, infoResponse.getIMDb(),0.1);
         assertEquals(97,infoResponse.getTomatoes());
 
     }
     @Test
     public void testUpdateByID() throws Exception{
-        Info info = new Info("2345678","Grpc_upgraded_ByID",9.5,100);
+        Info info = new Info("2345678","grpc_upgraded_ByID",9.5,100);
         moviedbService.updateByID(InfoRequest.newBuilder().setId(info.getId()).setName(info.getName())
                 .setIMDb(info.getIMDb()).setTomatoes(info.getTomatoes()).build(),null);
         Info updatedInfo = infoMapper.getInfoByID("2345678");
         TimeUnit.SECONDS.sleep(1);
-        assertEquals("Grpc_upgraded_ByID",updatedInfo.getName());
-        assertEquals("Grpc_upgraded_ByID",movieMapper.getNameByID("2345678"));
+        assertEquals("grpc_upgraded_ByID",updatedInfo.getName());
+        assertEquals("grpc_upgraded_ByID",movieMapper.getNameByID("2345678"));
         assertEquals(9.5, updatedInfo.getIMDb(),0.1);
         assertEquals(100, updatedInfo.getTomatoes());
     }
@@ -87,14 +87,14 @@ public class MoviedbServiceUnitTests {
     @Test
     public void insertMovie() throws Exception{
         int num = movieMapper.getAllID().size();
-        Info info = new Info("234567890_insert" , "Grpc_Insert", 9.8,100);
+        Info info = new Info("234567890_insert" , "grpc_Insert", 9.8,100);
         moviedbService.insertMovie(InfoRequest.newBuilder().setId(info.getId()).setName(info.getName())
                 .setIMDb(info.getIMDb()).setTomatoes(info.getTomatoes()).build(),null);
         TimeUnit.SECONDS.sleep(1);
         int newNum = movieMapper.getAllID().size();
         assertEquals(num+1,newNum);
-        assertEquals("Grpc_Insert",infoMapper.getInfoByID("234567890_insert").getName());
-        assertEquals("Grpc_Insert" , movieMapper.getNameByID("234567890_insert"));
+        assertEquals("grpc_Insert",infoMapper.getInfoByID("234567890_insert").getName());
+        assertEquals("grpc_Insert" , movieMapper.getNameByID("234567890_insert"));
     }
     @Test
     public void testSegmentation(){

@@ -5,5 +5,6 @@ import com.guohaohome.moviedb.sqlEntity.User;
 public interface UserMapper {
     void insertUser(User user);
     User getUserByUserName(String UserName);
+    void deleteUserByUserName(String UserName);
 
 }

@@ -1,7 +1,6 @@
 package com.guohaohome.moviedb.dao;
 
 import com.guohaohome.moviedb.sqlEntity.Info;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 public interface InfoMapper {

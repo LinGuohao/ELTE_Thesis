@@ -1,9 +1,7 @@
 package com.guohaohome.moviedb.sqlApiTest;
 
 
-import com.guohaohome.moviedb.controller.Init;
 import com.guohaohome.moviedb.dao.InfoMapper;
-import com.guohaohome.moviedb.dao.MovieMapper;
 import com.guohaohome.moviedb.sqlEntity.Info;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
@@ -11,7 +9,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -29,65 +26,62 @@ public class InfoMapperTester {
 
     @Test
     public void testGetInfoByID() {
-        Info info = infoMapper.getInfoByID("12345");
-        assertEquals("testGetInfoByID",info.getName());
-        assertEquals(9.0, info.getIMDb(), 0.1);
-        assertEquals(90, info.getTomatoes());
+        Info info = infoMapper.getInfoByID("testMovieId");
+        assertEquals("testMovieId",info.getId());
+        assertEquals("testMovieName",info.getName());
+        assertEquals(9.0,info.getIMDb(),0.1);
+        assertEquals(90,info.getTomatoes());
+    }
+
+    @Test
+    public void testInsertInfoAndDeleteInfoByID() {
+        Info info = new Info("testInsertInfoAndDeleteInfoByIDID","testInsertInfoAndDeleteInfoByIDName"
+                                ,9.2,92);
+        infoMapper.insertInfo(info);
+        info = infoMapper.getInfoByID("testInsertInfoAndDeleteInfoByIDID");
+        assertEquals("testInsertInfoAndDeleteInfoByIDID",info.getId());
+        assertEquals("testInsertInfoAndDeleteInfoByIDName",info.getName());
+        assertEquals(9.2,info.getIMDb(),0.1);
+        assertEquals(92,info.getTomatoes());
+        infoMapper.deleteInfoByID("testInsertInfoAndDeleteInfoByIDID");
+        info = infoMapper.getInfoByID("testInsertInfoAndDeleteInfoByIDID");
+        assertNull(info);
     }
 
     @Test
     public void testUpdateIMDbByID() {
-        double currentIMDb = infoMapper.getInfoByID("12345678").getIMDb();
-        infoMapper.updateIMDbByID("12345678", 9.8);
-        double updatedIMDbByID = infoMapper.getInfoByID("12345678").getIMDb();
-        assertEquals(9.8, updatedIMDbByID, 0.1);
+        double currentIMDb = infoMapper.getInfoByID("testMovieId").getIMDb();
+        double updateIMDb = 9.1;
+        assertNotEquals(updateIMDb,currentIMDb);
+        infoMapper.updateIMDbByID("testMovieId",updateIMDb);
+        assertEquals(updateIMDb,infoMapper.getInfoByID("testMovieId").getIMDb(),0.1);
+        infoMapper.updateIMDbByID("testMovieId",currentIMDb);
     }
 
     @Test
     public void testUpdateTomatoesByID() {
-        int currentTomatoes = infoMapper.getInfoByID("12345678").getTomatoes();
-        infoMapper.updateTomatoesByID("12345678", 95);
-        int updatedTomatoes = infoMapper.getInfoByID("12345678").getTomatoes();
-        assertEquals(95, updatedTomatoes);
+        int currentTomatoes = infoMapper.getInfoByID("testMovieId").getTomatoes();
+        int updateTomatoes = 91;
+        assertNotEquals(currentTomatoes,updateTomatoes);
+        infoMapper.updateTomatoesByID("testMovieId",updateTomatoes);
+        assertEquals(updateTomatoes,infoMapper.getInfoByID("testMovieId").getTomatoes());
+        infoMapper.updateTomatoesByID("testMovieId",currentTomatoes);
     }
 
     @Test
-    public void testInsertInfo(){
-        String id = "123456";
-        String name = "infoMapper_testInsertInfo";
-        double IMDb = 9.5;
-        int Tomatoes = 93;
-        Info info = new Info(id,name,IMDb,Tomatoes);
-        infoMapper.insertInfo(info);
-        Info testInfo = infoMapper.getInfoByID("123456");
-        assertEquals(name,testInfo.getName());
-        assertEquals(IMDb, info.getIMDb(), 0.1);
-        assertEquals(Tomatoes, info.getTomatoes());
+    public void testUpdateInfoByID() {
+        Info currentInfo = infoMapper.getInfoByID("testMovieId");
+        Info newInfo = new Info(currentInfo.getId(),"testUpdateInfoByIDName3"
+                ,9.4,94);
+        infoMapper.updateInfoByID(newInfo,"testMovieId");
+        Info updateInfo = infoMapper.getInfoByID(currentInfo.getId());
+        assertEquals(updateInfo.getId(),newInfo.getId());
+        assertEquals(updateInfo.getName(),newInfo.getName());
+        assertEquals(updateInfo.getTomatoes(),newInfo.getTomatoes());
+        assertEquals(updateInfo.getIMDb(),newInfo.getIMDb(),0.1);
+        infoMapper.updateInfoByID(currentInfo,currentInfo.getId());
+
     }
-    @Test
-    public void testUpdateInfo()
-    {
-        String id = "1234567";
-        String name = "testUpdateInfo";
-        double IMDb = 9.3;
-        int Tomatoes = 93;
-        Info info = new Info(id,name,IMDb,Tomatoes);
-        infoMapper.updateInfoByID(info,id);
-        Info testInfo = infoMapper.getInfoByID("1234567");
-        assertEquals(name,testInfo.getName());
-        assertEquals(IMDb,testInfo.getIMDb(),0.1);
-        assertEquals(Tomatoes,testInfo.getTomatoes());
-    }
-    @Test
-    public void testDeleteInfoByID(){
-        Info info = new Info("testDeleteInfoByIDID","testDeleteInfoByIDName",10.0
-                ,10);
-        infoMapper.insertInfo(info);
-        info = infoMapper.getInfoByID("testDeleteInfoByIDID");
-        assertNotNull(info);
-        infoMapper.deleteInfoByID("testDeleteInfoByIDID");
-        info = infoMapper.getInfoByID("testDeleteInfoByIDID");
-        assertNull(info);
-    }
+
 }
 

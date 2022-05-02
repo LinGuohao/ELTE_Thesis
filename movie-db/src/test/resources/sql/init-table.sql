@@ -36,3 +36,9 @@ create table user_comment(
     movieID varchar(255),
     content varchar(2000)
 );
+
+drop table if exists user_like;
+create table user_like(
+    username varchar(255),
+    id varchar(255)
+);

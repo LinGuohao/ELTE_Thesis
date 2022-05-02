@@ -26,7 +26,7 @@ public class LineMapperTester {
     LineMapper lineMapper;
     @Test
     public void testGetLines(){
-        List<Line> lines = lineMapper.getLines("12345");
+        List<Line> lines = lineMapper.getLines("testMovieId");
         assertEquals(2,lines.size());
         assertEquals("testSentence",lines.get(0).getSentence());
         assertEquals("testAuthor",lines.get(0).getAuthor());
@@ -36,7 +36,7 @@ public class LineMapperTester {
         assertEquals("testLine_id2",lines.get(1).getLine_id());
     }
     @Test
-    public void insertLine(){
+    public void testInsertLineAndDeleteLine(){
         Line line = new Line("testInsertLine","testInsertLineSentence","testInsertLineAuthor"
                                 ,"testInsertLineLine_id");
         lineMapper.insertLine(line);
@@ -45,16 +45,8 @@ public class LineMapperTester {
         assertEquals("testInsertLineSentence",lines.get(0).getSentence());
         assertEquals("testInsertLineAuthor",lines.get(0).getAuthor());
         assertEquals("testInsertLineLine_id",lines.get(0).getLine_id());
-    }
-    @Test
-    public void deleteLine(){
-        Line line = new Line("testDeleteLine","testDeleteLineSentence","testDeleteLineAuthor"
-                ,"testDeleteLineLine_id");
-        lineMapper.insertLine(line);
-        List<Line>lines = lineMapper.getLines("testDeleteLine");
-        assertEquals(1,lines.size());
-        lineMapper.deleteLine("testDeleteLineLine_id");
-        lines=lineMapper.getLines("testDeleteLine");
+        lineMapper.deleteLine("testInsertLineLine_id");
+        lines=lineMapper.getLines("testInsertLine");
         assertEquals(0,lines.size());
     }
 }

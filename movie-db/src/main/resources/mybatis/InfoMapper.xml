@@ -20,7 +20,7 @@
 
     <update id="updateInfoByID">
         update Info set name = #{newInfo.name}, IMDb = #{newInfo.IMDb} , Tomatoes = #{newInfo.Tomatoes}
-            where ID = ${newInfo.ID}
+            where ID = #{newInfo.id}
     </update>
 
     <insert id="insertInfo" parameterType="com.guohaohome.moviedb.sqlEntity.Info">

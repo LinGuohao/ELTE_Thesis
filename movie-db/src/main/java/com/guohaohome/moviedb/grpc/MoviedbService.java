@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+
+
 @GrpcService
 @Transactional
 public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
@@ -48,19 +50,6 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
     @Autowired
     Utils utils;
 
-
-    public static String SHA256Encryption(String plaintext) {
-        MessageDigest messageDigest;
-        String ciphertext = "";
-        try {
-            messageDigest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = messageDigest.digest(plaintext.getBytes(StandardCharsets.UTF_8));
-            ciphertext = Hex.encodeHexString(hash);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return ciphertext;
-    }
 
     @Override
     public void getAllID(com.google.protobuf.Empty request,
@@ -265,7 +254,7 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
         BooleanResponse.Builder builder = BooleanResponse.newBuilder();
         User user = userMapper.getUserByUserName(userInfo.getUsername());
         if (user == null) {
-            String password = SHA256Encryption(userInfo.getPassword());
+            String password =  Utils.SHA256Encryption(userInfo.getPassword());
             userMapper.insertUser(new User(userInfo.getUsername(), password, userInfo.getFullName(),
                     userInfo.getRoles()));
             builder.setIsTrue(userMapper.getUserByUserName(userInfo.getUsername()) != null ? 1 : -1);
@@ -299,7 +288,7 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
         if (user == null) {
             builder.setUsername("null");
         } else {
-            if (!SHA256Encryption(verificationRequest.getPassword()).equals(user.getPassword())) {
+            if (!Utils.SHA256Encryption(verificationRequest.getPassword()).equals(user.getPassword())) {
                 builder.setUsername("wrong");
             } else {
                 builder.setUsername(user.getUserName()).setFullName(user.getFullName())

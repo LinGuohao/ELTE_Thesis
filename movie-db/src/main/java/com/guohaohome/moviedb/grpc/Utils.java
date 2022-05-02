@@ -1,11 +1,15 @@
 package com.guohaohome.moviedb.grpc;
 
+import org.apache.commons.codec.binary.Hex;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Calendar;
 import java.util.Random;
@@ -13,6 +17,19 @@ import java.util.UUID;
 
 @Component
 public class Utils {
+    public static String SHA256Encryption(String plaintext) {
+        MessageDigest messageDigest;
+        String ciphertext = "";
+        try {
+            messageDigest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = messageDigest.digest(plaintext.getBytes(StandardCharsets.UTF_8));
+            ciphertext = Hex.encodeHexString(hash);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return ciphertext;
+    }
+
     public static File base64ToFile(String base64) throws Exception {
         if (base64.contains("data:image")||base64.contains("data:audio")) {
             base64 = base64.substring(base64.indexOf(",") + 1);

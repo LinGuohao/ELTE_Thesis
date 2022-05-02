@@ -32,7 +32,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @MapperScan("com/guohaohome/moviedb/dao")
-public class MoviedbServiceUnitTests {
+public class MoviedbServiceTests {
     @Autowired
     private MoviedbService moviedbService;
     @Autowired

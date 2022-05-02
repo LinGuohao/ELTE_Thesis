@@ -1,16 +1,12 @@
 package com.guohaohome.moviedb.sqlApiTest;
 
 
-import com.guohaohome.moviedb.controller.Init;
 import com.guohaohome.moviedb.dao.MovieMapper;
 import com.guohaohome.moviedb.sqlEntity.Movie;
-import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -31,58 +27,44 @@ public class MovieMapperTester {
 
     @Test
     public void testGetNameByID() {
-        String name = movieMapper.getNameByID("1234567");
-        assertEquals("testGetNameByID", name);
+        String name = movieMapper.getNameByID("testMovieId");
+        assertEquals("testMovieName", name);
     }
 
     @Test
     public void testGetIDByName() {
-        String ID = movieMapper.getIDByName("testGetIDByName");
-        assertEquals("12345", ID);
+        String ID = movieMapper.getIDByName("testMovieName");
+        assertEquals("testMovieId", ID);
     }
 
     @Test
-    public void testInsertMovie() {
-        int num = movieMapper.getAllID().size();
-        Movie movie = new Movie("123456789", "testInsertMovie");
+    public void testInsertMovieAndDeleteMovieByID() {
+        Movie movie = new Movie("testInsertMovieAndDeleteMovieByIDID"
+                , "testInsertMovieAndDeleteMovieByIDName");
         movieMapper.insertMovie(movie);
-        int newNum = movieMapper.getAllID().size();
-        assertEquals(num+1 , newNum);
+        assertNotNull(movieMapper.getNameByID("testInsertMovieAndDeleteMovieByIDID"));
+        movieMapper.deleteMovieByID("testInsertMovieAndDeleteMovieByIDID");
+        assertNull(movieMapper.getNameByID("testInsertMovieAndDeleteMovieByIDID"));
     }
 
     @Test
     public void testGetAllID() {
-        int num = movieMapper.getAllID().size();
-        Movie movie = new Movie("1234567890", "testGetAllID");
-        movieMapper.insertMovie(movie);
-        int newNum = movieMapper.getAllID().size();
-        assertEquals(num+1,newNum);
-        List<String> allId = movieMapper.getAllID();
-        assert (allId.contains("1234567"));
-        assert (allId.contains("12345"));
+        List<String> movieId = movieMapper.getAllID();
+        assertEquals(2, movieId.size());
+        assertEquals("testMovieId", movieId.get(0));
+        assertEquals("testMovieId2", movieId.get(1));
     }
 
     @Test
-    public void testUpdateNameByID(){
-        String name = movieMapper.getNameByID("testMovieId");
-        assertEquals("testMovieName",name);
-        movieMapper.updateNameByID("testMovieId","testMovieName2");
-        name = movieMapper.getNameByID("testMovieId");
-        assertEquals("testMovieName2",name);
-        movieMapper.updateNameByID("testMovieId","testMovieName");
-
-    }
-    @Test
-    public void testDeleteMovieByID(){
-        Movie movie = new Movie("testDeleteMovieByIDID","testDeleteMovieByIDName");
+    public void testUpdateNameByID() {
+        Movie movie = new Movie("testUpdateNameByIDID", "testUpdateNameByIDName");
         movieMapper.insertMovie(movie);
-        String name = movieMapper.getNameByID("testDeleteMovieByIDID");
-        assertEquals("testDeleteMovieByIDName",name);
-        movieMapper.deleteMovieByID("testDeleteMovieByIDID");
-        name = movieMapper.getNameByID("testDeleteMovieByIDID");
-        assertNull(name);
+        String movieName = movieMapper.getNameByID("testUpdateNameByIDID");
+        assertEquals("testUpdateNameByIDName", movieName);
+        movieMapper.updateNameByID("testUpdateNameByIDID", "testUpdateNameByIDName2");
+        movieName = movieMapper.getNameByID("testUpdateNameByIDID");
+        assertEquals("testUpdateNameByIDName2", movieName);
+        movieMapper.deleteMovieByID("testUpdateNameByIDID");
 
     }
-
-
 }

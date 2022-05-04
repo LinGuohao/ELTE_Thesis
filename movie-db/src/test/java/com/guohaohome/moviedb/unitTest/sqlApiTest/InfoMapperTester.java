@@ -1,4 +1,4 @@
-package com.guohaohome.moviedb.sqlApiTest;
+package com.guohaohome.moviedb.unitTest.sqlApiTest;
 
 
 import com.guohaohome.moviedb.dao.InfoMapper;
@@ -10,6 +10,7 @@ import org.junit.runners.MethodSorters;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -20,9 +21,11 @@ import static org.junit.Assert.*;
 @SpringBootTest
 @MapperScan("com/guohaohome/moviedb/dao")
 @FixMethodOrder(MethodSorters.JVM)
+@DirtiesContext
 public class InfoMapperTester {
     @Autowired
     InfoMapper infoMapper;
+
 
     @Test
     public void testGetInfoByID() {
@@ -32,7 +35,6 @@ public class InfoMapperTester {
         assertEquals(9.0,info.getIMDb(),0.1);
         assertEquals(90,info.getTomatoes());
     }
-
     @Test
     public void testInsertInfoAndDeleteInfoByID() {
         Info info = new Info("testInsertInfoAndDeleteInfoByIDID","testInsertInfoAndDeleteInfoByIDName"
@@ -47,7 +49,6 @@ public class InfoMapperTester {
         info = infoMapper.getInfoByID("testInsertInfoAndDeleteInfoByIDID");
         assertNull(info);
     }
-
     @Test
     public void testUpdateIMDbByID() {
         double currentIMDb = infoMapper.getInfoByID("testMovieId").getIMDb();

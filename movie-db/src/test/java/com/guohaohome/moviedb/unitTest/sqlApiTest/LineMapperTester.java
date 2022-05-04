@@ -1,4 +1,4 @@
-package com.guohaohome.moviedb.sqlApiTest;
+package com.guohaohome.moviedb.unitTest.sqlApiTest;
 
 import com.guohaohome.moviedb.dao.LineMapper;
 import com.guohaohome.moviedb.sqlEntity.Line;
@@ -9,6 +9,7 @@ import org.junit.runners.MethodSorters;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -21,6 +22,7 @@ import static org.junit.Assert.assertEquals;
 @SpringBootTest
 @MapperScan("com/guohaohome/moviedb/dao")
 @FixMethodOrder(MethodSorters.JVM)
+@DirtiesContext
 public class LineMapperTester {
     @Autowired
     LineMapper lineMapper;

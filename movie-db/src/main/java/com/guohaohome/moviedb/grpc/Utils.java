@@ -81,7 +81,7 @@ public class Utils {
     public String generateId() {
         long time = Calendar.getInstance().getTimeInMillis();
         Random r = new Random();
-        r.setSeed(time);
+        r.setSeed(time+new Random().nextInt());
         int randInt = r.nextInt(100000);
         return String.valueOf(time) + randInt;
     }

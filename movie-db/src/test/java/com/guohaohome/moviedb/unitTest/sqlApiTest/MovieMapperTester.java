@@ -1,4 +1,4 @@
-package com.guohaohome.moviedb.sqlApiTest;
+package com.guohaohome.moviedb.unitTest.sqlApiTest;
 
 
 import com.guohaohome.moviedb.dao.MovieMapper;
@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -20,6 +21,7 @@ import static org.junit.Assert.*;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @MapperScan("com/guohaohome/moviedb/dao")
+@DirtiesContext
 public class MovieMapperTester {
 
     @Autowired

@@ -65,5 +65,9 @@ public class OSSConfiguration {
         return ossClient;
     }
 
+    public OSS ossClient(){
+        return initOSSClientBuilder().build(endpoint, accessKeyId, accessKeySecret);
+    }
+
 
 }

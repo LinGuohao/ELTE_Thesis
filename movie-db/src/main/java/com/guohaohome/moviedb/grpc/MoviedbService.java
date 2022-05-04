@@ -44,8 +44,6 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
     @Autowired
     UserLikeMapper userLikeMapper;
     @Autowired
-    OSS ossClient;
-    @Autowired
     OSSConfiguration ossConfiguration;
     @Autowired
     Utils utils;
@@ -102,6 +100,7 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
     }
     @Override
     public void deleteMovieByID(MovieID request,StreamObserver<BooleanResponse> streamObserver){
+        OSS ossClient = ossConfiguration.ossClient();
         BooleanResponse.Builder builder = BooleanResponse.newBuilder();
         try {
             String nextMarker = null;
@@ -150,12 +149,14 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
         BooleanResponse response = builder.build();
         streamObserver.onNext(response);
         streamObserver.onCompleted();
+        ossClient.shutdown();
     }
 
 
 
     @Override
     public void getOssObjectList(ObjectListRequest request, StreamObserver<ObjectListResponse> responseObserver) {
+        OSS ossClient = ossConfiguration.ossClient();
         ListObjectsV2Result result = ossClient.listObjectsV2(request.getBucketName(), request.getKeyPrefix());
         List<OSSObjectSummary> ossObjectSummaries = result.getObjectSummaries();
         ObjectListResponse.Builder builder = ObjectListResponse.newBuilder();
@@ -166,7 +167,7 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
         ObjectListResponse response = builder.build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
-
+        ossClient.shutdown();
     }
 
     @Override
@@ -180,8 +181,6 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
         LineListResponse response = builder.build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
-
-
     }
 
     @Override
@@ -221,6 +220,7 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
 
     @Override
     public void getMusics(InfoByIDRequest request, StreamObserver<MusicListResponse> responseObserver) {
+        OSS ossClient = ossConfiguration.ossClient();
         MusicListResponse.Builder builder = MusicListResponse.newBuilder();
         ListObjectsV2Result res = ossClient.listObjectsV2("movie-db", request.getId() + "/OST");
         List<OSSObjectSummary> ossObjectSummaries = res.getObjectSummaries();
@@ -236,6 +236,7 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
         MusicListResponse response = builder.build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
+        ossClient.shutdown();
     }
 
     @Override
@@ -302,6 +303,7 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
 
     @Override
     public void uploadTextToOSS(TextUploadRequest request, StreamObserver<BooleanResponse> streamObserver) {
+        OSS ossClient = ossConfiguration.ossClient();
         BooleanResponse.Builder builder = BooleanResponse.newBuilder();
         try {
             PutObjectRequest putObjectRequest = new PutObjectRequest(ossConfiguration.getBucketName(),
@@ -314,10 +316,12 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
         BooleanResponse response = builder.build();
         streamObserver.onNext(response);
         streamObserver.onCompleted();
+        ossClient.shutdown();
     }
 
     @Override
     public void uploadFileToOSS(FileUploadRequest request, StreamObserver<BooleanResponse> streamObserver) {
+        OSS ossClient = ossConfiguration.ossClient();
         BooleanResponse.Builder builder = BooleanResponse.newBuilder();
         String filename;
         if(request.getObjectName().equals("-1")){
@@ -340,10 +344,12 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
         BooleanResponse response = builder.build();
         streamObserver.onNext(response);
         streamObserver.onCompleted();
+        ossClient.shutdown();
     }
 
     @Override
     public void deleteFileFromOSS(FileDeleteRequest request, StreamObserver<BooleanResponse> streamObserver) {
+        OSS ossClient = ossConfiguration.ossClient();
         BooleanResponse.Builder builder = BooleanResponse.newBuilder();
         try {
             ossClient.deleteObject(ossConfiguration.getBucketName(), request.getFilePath());
@@ -354,10 +360,12 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
         BooleanResponse response = builder.build();
         streamObserver.onNext(response);
         streamObserver.onCompleted();
+        ossClient.shutdown();
     }
 
     @Override
     public void uploadMusicToOSS(MusicUploadRequest request, StreamObserver<BooleanResponse> streamObserver) {
+        OSS ossClient = ossConfiguration.ossClient();
         BooleanResponse.Builder builder = BooleanResponse.newBuilder();
         try {
             PutObjectRequest putObjectRequest = new PutObjectRequest(ossConfiguration.getBucketName(),
@@ -372,6 +380,7 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
         BooleanResponse response = builder.build();
         streamObserver.onNext(response);
         streamObserver.onCompleted();
+        ossClient.shutdown();
     }
     @Override
     public void getCommentByMovieID(InfoByIDRequest request,StreamObserver<CommentListResponse> responseObserver){

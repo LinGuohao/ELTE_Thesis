@@ -1,4 +1,4 @@
-package com.guohaohome.moviedb.unitTest.sqlApiTest;
+package com.guohaohome.moviedb.unitTest.sqlAPITest;
 
 
 import com.guohaohome.moviedb.dao.InfoMapper;

@@ -1,20 +1,13 @@
 package com.guohaohome.moviedb.componentTest;
 
 
-import com.aliyun.oss.OSS;
-import com.aliyun.oss.OSSClient;
-import com.aliyun.oss.OSSClientBuilder;
 import com.guohaohome.moviedb.dao.*;
 import com.guohaohome.moviedb.grpc.MoviedbService;
+import com.guohaohome.moviedb.grpc.Utils;
 import com.guohaohome.moviedb.ossClient.OSSConfiguration;
 import com.guohaohome.moviedb.proto.*;
-import com.guohaohome.moviedb.sqlEntity.Comment;
-import com.guohaohome.moviedb.sqlEntity.Info;
-import com.guohaohome.moviedb.sqlEntity.Line;
-import com.guohaohome.moviedb.sqlEntity.UserLike;
+import com.guohaohome.moviedb.sqlEntity.*;
 import io.grpc.internal.testing.StreamRecorder;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mybatis.spring.annotation.MapperScan;
@@ -63,6 +56,8 @@ public class MoviedbServiceTests {
     private CommentMapper commentMapper;
     @Autowired
     private UserLikeMapper userLikeMapper;
+    @Autowired
+    private UserMapper userMapper;
 
     @Test
     public void testGetAllID() throws Exception {
@@ -103,23 +98,24 @@ public class MoviedbServiceTests {
         InputStream inputStream = classPathResource.getInputStream();
         String content = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
         inputStream.close();
-        StreamRecorder<BooleanResponse> booleanResponseStreamRecorder = StreamRecorder.create();
+        StreamRecorder<BooleanResponse> uploadBoolean = StreamRecorder.create();
         moviedbService.uploadFileToOSS(FileUploadRequest.newBuilder().setContent(content).setObjectPath("test/")
-                .setObjectName("test").setType("jpg").build(), booleanResponseStreamRecorder);
-        if (!booleanResponseStreamRecorder.awaitCompletion(10, TimeUnit.SECONDS)) {
+                .setObjectName("test").setType("jpg").build(), uploadBoolean);
+        if (!uploadBoolean.awaitCompletion(10, TimeUnit.SECONDS)) {
             throw new TimeoutException();
         }
-        assertNull(booleanResponseStreamRecorder.getError());
-        assertEquals(1, booleanResponseStreamRecorder.getValues().get(0).getIsTrue());
+        assertNull(uploadBoolean.getError());
+        assertEquals(1, uploadBoolean.getValues().get(0).getIsTrue());
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity response = restTemplate.getForEntity(ossPrefix + "/test/test.jpg", String.class);
         assertEquals(response.getStatusCode(), HttpStatus.OK);
-        moviedbService.deleteFileFromOSS(FileDeleteRequest.newBuilder().setFilePath("test/test.jpg").build(), booleanResponseStreamRecorder);
-        if (!booleanResponseStreamRecorder.awaitCompletion(10, TimeUnit.SECONDS)) {
+        StreamRecorder<BooleanResponse> deleteBoolean = StreamRecorder.create();
+        moviedbService.deleteFileFromOSS(FileDeleteRequest.newBuilder().setFilePath("test/test.jpg").build(), deleteBoolean);
+        if (!deleteBoolean.awaitCompletion(10, TimeUnit.SECONDS)) {
             throw new TimeoutException();
         }
-        assertNull(booleanResponseStreamRecorder.getError());
-        assertEquals(1, booleanResponseStreamRecorder.getValues().get(0).getIsTrue());
+        assertNull(deleteBoolean.getError());
+        assertEquals(1, deleteBoolean.getValues().get(0).getIsTrue());
         assertThrows(RestClientException.class, () -> {
             restTemplate.getForEntity(ossPrefix + "/test/test.jpg", String.class);
         });
@@ -130,7 +126,7 @@ public class MoviedbServiceTests {
         TextUploadRequest textUploadRequest = TextUploadRequest.newBuilder().setContent("test:testUploadTextToOSS")
                 .setObjectName("test/test.json").build();
         StreamRecorder<BooleanResponse> booleanResponseStreamRecorder = StreamRecorder.create();
-        moviedbService.uploadTextToOSS(textUploadRequest,booleanResponseStreamRecorder);
+        moviedbService.uploadTextToOSS(textUploadRequest, booleanResponseStreamRecorder);
         if (!booleanResponseStreamRecorder.awaitCompletion(10, TimeUnit.SECONDS)) {
             throw new TimeoutException();
         }
@@ -139,8 +135,8 @@ public class MoviedbServiceTests {
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity response = restTemplate.getForEntity(ossPrefix + "/test/test.json", String.class);
         assertEquals(response.getStatusCode(), HttpStatus.OK);
-        assertEquals("test:testUploadTextToOSS",response.getBody());
-        moviedbService.deleteFileFromOSS(FileDeleteRequest.newBuilder().setFilePath("test/test.json").build(),booleanResponseStreamRecorder);
+        assertEquals("test:testUploadTextToOSS", response.getBody());
+        moviedbService.deleteFileFromOSS(FileDeleteRequest.newBuilder().setFilePath("test/test.json").build(), booleanResponseStreamRecorder);
 
     }
 
@@ -187,6 +183,375 @@ public class MoviedbServiceTests {
     }
 
     @Test
+    public void testGetLines() throws Exception {
+        StreamRecorder<LineListResponse> lineListResponseStreamRecorder = StreamRecorder.create();
+        InfoByIDRequest infoByIDRequest = InfoByIDRequest.newBuilder().setId("testMovieId").build();
+        moviedbService.getLines(infoByIDRequest, lineListResponseStreamRecorder);
+        if (!lineListResponseStreamRecorder.awaitCompletion(10, TimeUnit.SECONDS)) {
+            throw new TimeoutException();
+        }
+        assertNull(lineListResponseStreamRecorder.getError());
+        List<LineList> lineList = lineListResponseStreamRecorder.getValues().get(0).getReplyList();
+        assertEquals(2, lineList.size());
+        assertEquals("testMovieId", lineList.get(0).getId());
+        assertEquals("testSentence", lineList.get(0).getSentence());
+        assertEquals("testAuthor", lineList.get(0).getAuthor());
+        assertEquals("testLine_id", lineList.get(0).getLineID());
+        assertEquals("testMovieId", lineList.get(0).getId());
+        assertEquals("testSentence2", lineList.get(1).getSentence());
+        assertEquals("testAuthor2", lineList.get(1).getAuthor());
+        assertEquals("testLine_id2", lineList.get(1).getLineID());
+    }
+
+    @Test
+    public void testInsertLineAndDeleteLine() throws Exception {
+        //Insert
+        //====================================
+        StreamRecorder<BooleanResponse> insertBoolean = StreamRecorder.create();
+        LineList lineList = LineList.newBuilder().setLineID("testInsertLineAndDeleteLineLineID")
+                .setSentence("testInsertLineAndDeleteLineSentence").setAuthor("testInsertLineAndDeleteLineAuthor")
+                .setId("testInsertLineAndDeleteLineID").build();
+        moviedbService.insertLine(lineList, insertBoolean);
+        if (!insertBoolean.awaitCompletion(10, TimeUnit.SECONDS)) {
+            throw new TimeoutException();
+        }
+        assertNull(insertBoolean.getError());
+        assertEquals(1, insertBoolean.getValues().get(0).getIsTrue());
+        List<Line> lines = lineMapper.getLines(lineList.getId());
+        assertEquals(1, lines.size());
+        assertEquals(lineList.getId(), lines.get(0).getId());
+        assertEquals(lineList.getSentence(), lines.get(0).getSentence());
+        assertEquals(lineList.getAuthor(), lines.get(0).getAuthor());
+        assertEquals(lineList.getLineID(), lines.get(0).getLine_id());
+        //============================
+        //Delete
+        deleteLineRequest deleteLineRequest = com.guohaohome.moviedb.proto.deleteLineRequest.newBuilder()
+                .setId(lineList.getId()).setLineID(lineList.getLineID()).build();
+        StreamRecorder<BooleanResponse> deleteBoolean = StreamRecorder.create();
+        moviedbService.deleteLine(deleteLineRequest, deleteBoolean);
+        if (!deleteBoolean.awaitCompletion(10, TimeUnit.SECONDS)) {
+            throw new TimeoutException();
+        }
+        assertNull(deleteBoolean.getError());
+        assertEquals(1, deleteBoolean.getValues().get(0).getIsTrue());
+        lines = lineMapper.getLines(lineList.getId());
+        assertEquals(0, lines.size());
+
+
+    }
+
+    @Test
+    public void testGetMusicsAndMusicUploadMusicToOSS() throws Exception {
+        //Upload two musics to test folder
+        String ObjectPath = "test/OST/";
+        ClassPathResource classPathResource = new ClassPathResource("testMusic.txt");
+        InputStream inputStream = classPathResource.getInputStream();
+        String content = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+        inputStream.close();
+        StreamRecorder<BooleanResponse> uploadBoolean = StreamRecorder.create();
+        moviedbService.uploadMusicToOSS(MusicUploadRequest.newBuilder().setContent(content).setMusicFilePath(ObjectPath)
+                .setMusicName("Respect").setType("mp3").setArtist("Aretha Franklin").build(), uploadBoolean);
+        if (!uploadBoolean.awaitCompletion(10, TimeUnit.SECONDS)) {
+            throw new TimeoutException();
+        }
+        assertNull(uploadBoolean.getError());
+        classPathResource = new ClassPathResource("testMusic2.txt");
+        inputStream = classPathResource.getInputStream();
+        content = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+        inputStream.close();
+        StreamRecorder<BooleanResponse> uploadBoolean2 = StreamRecorder.create();
+        moviedbService.uploadMusicToOSS(MusicUploadRequest.newBuilder().setContent(content).setMusicFilePath(ObjectPath)
+                .setMusicName("Raindrops Keep Falling On My Head").setType("mp3").setArtist("B.J. Thomas").build(), uploadBoolean2);
+        if (!uploadBoolean2.awaitCompletion(10, TimeUnit.SECONDS)) {
+            throw new TimeoutException();
+        }
+        assertNull(uploadBoolean2.getError());
+
+        //==========
+        // Test method
+        InfoByIDRequest infoByIDRequest = InfoByIDRequest.newBuilder().setId("test").build();
+        StreamRecorder<MusicListResponse> musicListResponseStreamRecorder = StreamRecorder.create();
+        moviedbService.getMusics(infoByIDRequest, musicListResponseStreamRecorder);
+        if (!musicListResponseStreamRecorder.awaitCompletion(10, TimeUnit.SECONDS)) {
+            throw new TimeoutException();
+        }
+        assertNull(musicListResponseStreamRecorder.getError());
+        List<MusicInfo> musicInfo = musicListResponseStreamRecorder.getValues().get(0).getReplyList();
+        assertEquals(2, musicInfo.size());
+        assertEquals("test/OST/Raindrops Keep Falling On My Head_B.J. Thomas.mp3", musicInfo.get(0).getAddress());
+        assertEquals("Raindrops Keep Falling On My Head", musicInfo.get(0).getMusicName());
+        assertEquals("test", musicInfo.get(0).getId());
+        assertEquals("B.J. Thomas", musicInfo.get(0).getArtist());
+        assertEquals("test/OST/Respect_Aretha Franklin.mp3", musicInfo.get(1).getAddress());
+        assertEquals("Respect", musicInfo.get(1).getMusicName());
+        assertEquals("test", musicInfo.get(1).getId());
+        assertEquals("Aretha Franklin", musicInfo.get(1).getArtist());
+
+        //Delete tmp test folder
+        StreamRecorder<BooleanResponse> deleteBoolean = StreamRecorder.create();
+        moviedbService.deleteFileFromOSS(FileDeleteRequest.newBuilder().setFilePath(musicInfo.get(0).getAddress()).build()
+                , deleteBoolean);
+        moviedbService.deleteFileFromOSS(FileDeleteRequest.newBuilder().setFilePath(musicInfo.get(1).getAddress()).build()
+                , deleteBoolean);
+
+    }
+
+    @Test
+    public void testJudgeUsername() throws Exception {
+        StreamRecorder<BooleanResponse>booleanResponseStreamRecorder = StreamRecorder.create();
+        UsernameRequest usernameRequest = UsernameRequest.newBuilder().setUsername("testUserName@test.com").build();
+        moviedbService.judgeUsername(usernameRequest,booleanResponseStreamRecorder);
+        if (!booleanResponseStreamRecorder.awaitCompletion(10, TimeUnit.SECONDS)) {
+            throw new TimeoutException();
+        }
+        assertNull(booleanResponseStreamRecorder.getError());
+        assertEquals(1, booleanResponseStreamRecorder.getValues().get(0).getIsTrue());
+        usernameRequest = UsernameRequest.newBuilder().setUsername("testJudgeUsername@test.com").build();
+        StreamRecorder<BooleanResponse>newBooleanResponseStreamRecorder = StreamRecorder.create();
+        moviedbService.judgeUsername(usernameRequest,newBooleanResponseStreamRecorder);
+        if (!newBooleanResponseStreamRecorder.awaitCompletion(10, TimeUnit.SECONDS)) {
+            throw new TimeoutException();
+        }
+        assertNull(newBooleanResponseStreamRecorder.getError());
+        assertEquals(-1, newBooleanResponseStreamRecorder.getValues().get(0).getIsTrue());
+
+
+    }
+
+    @Test
+    public void testInsertUser() throws Exception {
+        UserInfo userInfo = UserInfo.newBuilder().setUsername("testInsertUser@test.com")
+                .setPassword("testInsertUserPassword")
+                .setFullName("testInsertUserFullName")
+                .setRoles("user").build();
+        StreamRecorder<BooleanResponse>booleanResponseStreamRecorder = StreamRecorder.create();
+        moviedbService.insertUser(userInfo,booleanResponseStreamRecorder);
+        if (!booleanResponseStreamRecorder.awaitCompletion(10, TimeUnit.SECONDS)) {
+            throw new TimeoutException();
+        }
+        assertNull(booleanResponseStreamRecorder.getError());
+        assertEquals(1, booleanResponseStreamRecorder.getValues().get(0).getIsTrue());
+        User user = userMapper.getUserByUserName(userInfo.getUsername());
+        assertEquals(userInfo.getUsername(),user.getUserName());
+        assertEquals(Utils.SHA256Encryption(userInfo.getPassword()),user.getPassword());
+        assertEquals(userInfo.getFullName(),user.getFullName());
+        assertEquals(userInfo.getRoles(),user.getRoles());
+        //Cannot be inserted when have the same username in database
+        StreamRecorder<BooleanResponse>newBooleanResponseStreamRecorder = StreamRecorder.create();
+        moviedbService.insertUser(userInfo,newBooleanResponseStreamRecorder);
+        if (!newBooleanResponseStreamRecorder.awaitCompletion(10, TimeUnit.SECONDS)) {
+            throw new TimeoutException();
+        }
+        assertNull(newBooleanResponseStreamRecorder.getError());
+        assertEquals(-1, newBooleanResponseStreamRecorder.getValues().get(0).getIsTrue());
+        userMapper.deleteUserByUserName(userInfo.getUsername());
+    }
+    @Test
+    public void testGetUserByUserName() throws Exception {
+        UsernameRequest usernameRequest = UsernameRequest.newBuilder().setUsername("testUserName@test.com").build();
+        StreamRecorder<UserInfo>userInfoStreamRecorder = StreamRecorder.create();
+        moviedbService.getUserByUserName(usernameRequest,userInfoStreamRecorder);
+        if (!userInfoStreamRecorder.awaitCompletion(10, TimeUnit.SECONDS)) {
+            throw new TimeoutException();
+        }
+        assertNull(userInfoStreamRecorder.getError());
+        UserInfo userInfo = userInfoStreamRecorder.getValues().get(0);
+        assertEquals("testUserName@test.com",userInfo.getUsername());
+        assertEquals("testPassword",userInfo.getPassword());
+        assertEquals("testFullname",userInfo.getFullName());
+        assertEquals("testRoles",userInfo.getRoles());
+    }
+
+    @Test
+    public void testAuthenticateUser() throws Exception {
+        //insert a user to test
+        String password = "testPassword";
+        User user = new User("testAuthenticateUserUsername",Utils.SHA256Encryption(password),"testAuthenticateUserFullName"
+                            ,"testRules");
+        userMapper.insertUser(user);
+        StreamRecorder<UserInfo> successUserInfo = StreamRecorder.create();
+        moviedbService.authenticateUser(VerificationRequest.newBuilder().setUsername(user.getUserName())
+                    .setPassword(password).build(),successUserInfo);
+        if (!successUserInfo.awaitCompletion(10, TimeUnit.SECONDS)) {
+            throw new TimeoutException();
+        }
+        assertNull(successUserInfo.getError());
+        UserInfo successUser = successUserInfo.getValues().get(0);
+        assertEquals(Utils.SHA256Encryption(password),successUser.getPassword());
+        assertEquals(user.getUserName(),successUser.getUsername());
+        assertEquals(user.getFullName(),successUser.getFullName());
+        assertEquals(user.getRoles(),successUser.getRoles());
+        //No such user
+        StreamRecorder<UserInfo> noUser = StreamRecorder.create();
+        moviedbService.authenticateUser(VerificationRequest.newBuilder().setUsername("NoUserUsername")
+                .setPassword(user.getPassword()).build(),noUser);
+        if (!noUser.awaitCompletion(10, TimeUnit.SECONDS)) {
+            throw new TimeoutException();
+        }
+        assertNull(noUser.getError());
+        assertEquals("null",noUser.getValues().get(0).getUsername());
+        //Wrong password
+        StreamRecorder<UserInfo> wrongPassword = StreamRecorder.create();
+        moviedbService.authenticateUser(VerificationRequest.newBuilder().setUsername(user.getUserName())
+                .setPassword("WrongPassword").build(),wrongPassword);
+        if (!wrongPassword.awaitCompletion(10, TimeUnit.SECONDS)) {
+            throw new TimeoutException();
+        }
+        assertNull(wrongPassword.getError());
+        assertEquals("wrong",wrongPassword.getValues().get(0).getUsername());
+        //Delete tmp user
+        userMapper.deleteUserByUserName(user.getUserName());
+    }
+
+    @Test
+    public void testGetCommentByMovieID() throws Exception {
+        StreamRecorder<CommentListResponse> commentListResponseStreamRecorder = StreamRecorder.create();
+        InfoByIDRequest infoByIDRequest = InfoByIDRequest.newBuilder().setId("testMovieId").build();
+        moviedbService.getCommentByMovieID(infoByIDRequest,commentListResponseStreamRecorder);
+        if (!commentListResponseStreamRecorder.awaitCompletion(10, TimeUnit.SECONDS)) {
+            throw new TimeoutException();
+        }
+        assertNull(commentListResponseStreamRecorder.getError());
+        List<CommentInfo> commentInfoList = commentListResponseStreamRecorder.getValues().get(0).getReplyList();
+        assertEquals(2,commentInfoList.size());
+        assertEquals("testCommentID",commentInfoList.get(0).getCommentID());
+        assertEquals("testUserName",commentInfoList.get(0).getUsername());
+        assertEquals("testMovieId",commentInfoList.get(0).getMovieID());
+        assertEquals("testContent",commentInfoList.get(0).getContent());
+        assertEquals("testCommentID2",commentInfoList.get(1).getCommentID());
+        assertEquals("testUserName2",commentInfoList.get(1).getUsername());
+        assertEquals("testMovieId",commentInfoList.get(1).getMovieID());
+        assertEquals("testContent2",commentInfoList.get(1).getContent());
+    }
+
+    @Test
+    public void testGetCommentByUserName() throws Exception {
+        InfoByIDRequest infoByIDRequest = InfoByIDRequest.newBuilder().setId("testUserName2").build();
+        StreamRecorder<CommentListResponse> commentListResponseStreamRecorder = StreamRecorder.create();
+        moviedbService.getCommentByUserName(infoByIDRequest,commentListResponseStreamRecorder);
+        if (!commentListResponseStreamRecorder.awaitCompletion(10, TimeUnit.SECONDS)) {
+            throw new TimeoutException();
+        }
+        assertNull(commentListResponseStreamRecorder.getError());
+        List<CommentInfo> commentInfoList = commentListResponseStreamRecorder.getValues().get(0).getReplyList();
+        assertEquals(2,commentInfoList.size());
+        assertEquals("testCommentID2",commentInfoList.get(0).getCommentID());
+        assertEquals("testUserName2",commentInfoList.get(0).getUsername());
+        assertEquals("testMovieId",commentInfoList.get(0).getMovieID());
+        assertEquals("testContent2",commentInfoList.get(0).getContent());
+        assertEquals("testCommentID3",commentInfoList.get(1).getCommentID());
+        assertEquals("testUserName2",commentInfoList.get(1).getUsername());
+        assertEquals("testMovieId2",commentInfoList.get(1).getMovieID());
+        assertEquals("testContent3",commentInfoList.get(1).getContent());
+    }
+
+    @Test
+    public void testInsertCommentAndDeleteComment() throws Exception {
+        //Insert
+        CommentInfo commentInfo = CommentInfo.newBuilder().setCommentID("testInsertCommentAndDeleteCommentCommentID")
+                .setUsername("testInsertCommentAndDeleteCommentUsername")
+                .setMovieID("testInsertCommentAndDeleteCommentMovieID")
+                .setContent("testInsertCommentAndDeleteCommentContent").build();
+        StreamRecorder<BooleanResponse>insertBoolean = StreamRecorder.create();
+        moviedbService.insertComment(commentInfo,insertBoolean);
+        if (!insertBoolean.awaitCompletion(10, TimeUnit.SECONDS)) {
+            throw new TimeoutException();
+        }
+        assertNull(insertBoolean.getError());
+        assertEquals(1, insertBoolean.getValues().get(0).getIsTrue());
+        Comment comment = commentMapper.getCommentByCommentID(commentInfo.getCommentID());
+        assertEquals(commentInfo.getCommentID(),comment.getCommentID());
+        assertEquals(commentInfo.getContent(),comment.getContent());
+        assertEquals(commentInfo.getUsername(),comment.getUsername());
+        assertEquals(commentInfo.getMovieID(),comment.getMovieID());
+        //===================================
+        //Test delete
+        InfoByIDRequest infoByIDRequest = InfoByIDRequest.newBuilder().setId(commentInfo.getCommentID()).build();
+        StreamRecorder<BooleanResponse> deleteBoolean = StreamRecorder.create();
+        moviedbService.deleteComment(infoByIDRequest,deleteBoolean);
+        if (!deleteBoolean.awaitCompletion(10, TimeUnit.SECONDS)) {
+            throw new TimeoutException();
+        }
+        assertNull(deleteBoolean.getError());
+        assertEquals(1, deleteBoolean.getValues().get(0).getIsTrue());
+        assertNull(commentMapper.getCommentByCommentID(commentInfo.getCommentID()));
+    }
+
+    @Test
+    public void testInsertUserLikeAndDeleteUserLike() throws Exception {
+        //Test Insert
+        UserLikeInfo userLikeInfo = UserLikeInfo.newBuilder().setUsername("testInsertUserLikeAndDeleteUserLikeUserName")
+                .setId("testInsertUserLikeAndDeleteUserLikeID").build();
+        StreamRecorder<BooleanResponse>insertBoolean = StreamRecorder.create();
+        moviedbService.insertUserLike(userLikeInfo,insertBoolean);
+        if (!insertBoolean.awaitCompletion(10, TimeUnit.SECONDS)) {
+            throw new TimeoutException();
+        }
+        assertNull(insertBoolean.getError());
+        assertEquals(1, insertBoolean.getValues().get(0).getIsTrue());
+        UserLike userLike =  userLikeMapper.getUserLikes(userLikeInfo.getUsername()).get(0);
+        assertEquals(userLikeInfo.getUsername(),userLike.getUsername());
+        assertEquals(userLikeInfo.getId(),userLikeInfo.getId());
+        //Test Delete
+        //Can Delete
+        StreamRecorder<BooleanResponse>successBoolean = StreamRecorder.create();
+        moviedbService.deleteUserLike(userLikeInfo,successBoolean);
+        if (!successBoolean.awaitCompletion(10, TimeUnit.SECONDS)) {
+            throw new TimeoutException();
+        }
+        assertNull(successBoolean.getError());
+        assertEquals(1, successBoolean.getValues().get(0).getIsTrue());
+        List<UserLike>userLikeList = userLikeMapper.getUserLikes(userLikeInfo.getUsername());
+        assertEquals(0,userLikeList.size());
+        //No such UserLike record, can not be deleted
+        StreamRecorder<BooleanResponse>failBoolean = StreamRecorder.create();
+        moviedbService.deleteUserLike(userLikeInfo,failBoolean);
+        if (!failBoolean.awaitCompletion(10, TimeUnit.SECONDS)) {
+            throw new TimeoutException();
+        }
+        assertNull(failBoolean.getError());
+        assertEquals(-1, failBoolean.getValues().get(0).getIsTrue());
+
+    }
+
+    @Test
+    public void testGetUserLikes() throws Exception {
+        UsernameRequest usernameRequest = UsernameRequest.newBuilder().setUsername("testUserName").build();
+        StreamRecorder<UserLikeListResponse>userLikeListResponseStreamRecorder = StreamRecorder.create();
+        moviedbService.getUserLikes(usernameRequest,userLikeListResponseStreamRecorder);
+        if (!userLikeListResponseStreamRecorder.awaitCompletion(10, TimeUnit.SECONDS)) {
+            throw new TimeoutException();
+        }
+        assertNull(userLikeListResponseStreamRecorder.getError());
+        List<UserLikeInfo>userLikeInfoList = userLikeListResponseStreamRecorder.getValues().get(0).getReplyList();
+        assertEquals(2,userLikeInfoList.size());
+        assertEquals("testUserName",userLikeInfoList.get(0).getUsername());
+        assertEquals("testId",userLikeInfoList.get(0).getId());
+        assertEquals("testUserName",userLikeInfoList.get(1).getUsername());
+        assertEquals("testId2",userLikeInfoList.get(1).getId());
+    }
+
+
+    @Test
+    public void testGetFavoriteMovieList() throws Exception {
+        UsernameRequest usernameRequest = UsernameRequest.newBuilder().setUsername("favoriteMovieUserName").build();
+        StreamRecorder<InfoList>infoListStreamRecorder = StreamRecorder.create();
+        moviedbService.getFavoriteMovieList(usernameRequest,infoListStreamRecorder);
+        if (!infoListStreamRecorder.awaitCompletion(10, TimeUnit.SECONDS)) {
+            throw new TimeoutException();
+        }
+        assertNull(infoListStreamRecorder.getError());
+        List<InfoResponse> infoResponseList = infoListStreamRecorder.getValues().get(0).getReplyList();
+        assertEquals(1,infoResponseList.size());
+        InfoResponse infoResponse = infoResponseList.get(0);
+        assertEquals("testMovieId",infoResponse.getId());
+        assertEquals("testMovieName",infoResponse.getName());
+        assertEquals(9.0,infoResponse.getIMDb(),0.1);
+        assertEquals(90,infoResponse.getTomatoes());
+
+    }
+
+    @Test
     public void testInsertMovieAndDeleteMovieByID() throws Exception {
         //Test InsertMovie
         StreamRecorder<InfoResponse> responseObserver = StreamRecorder.create();
@@ -216,14 +581,14 @@ public class MoviedbServiceTests {
         InputStream inputStream = classPathResource.getInputStream();
         String content = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
         inputStream.close();
-        StreamRecorder<BooleanResponse> booleanResponseStreamRecorder = StreamRecorder.create();
+        StreamRecorder<BooleanResponse> uploadBoolean = StreamRecorder.create();
         moviedbService.uploadFileToOSS(FileUploadRequest.newBuilder().setContent(content).setObjectPath("RPC_testInsertMovieAndDeleteMovieByIDID/")
-                .setObjectName("test").setType("jpg").build(), booleanResponseStreamRecorder);
-        if (!booleanResponseStreamRecorder.awaitCompletion(10, TimeUnit.SECONDS)) {
+                .setObjectName("test").setType("jpg").build(), uploadBoolean);
+        if (!uploadBoolean.awaitCompletion(10, TimeUnit.SECONDS)) {
             throw new TimeoutException();
         }
-        assertNull(booleanResponseStreamRecorder.getError());
-        assertEquals(1, booleanResponseStreamRecorder.getValues().get(0).getIsTrue());
+        assertNull(uploadBoolean.getError());
+        assertEquals(1, uploadBoolean.getValues().get(0).getIsTrue());
         //Add some Lines to this movie;
         lineMapper.insertLine(new Line(info.getId(), "testInsertMovieAndDeleteMovieByIDSentence"
                 , "testInsertMovieAndDeleteMovieByIDAuthor", "testInsertMovieAndDeleteMovieByIDLine_id"));
@@ -235,12 +600,13 @@ public class MoviedbServiceTests {
         userLikeMapper.insertUserLike(new UserLike("testInsertMovieAndDeleteMovieByIDUsername"
                 , info.getId()));
 
-        moviedbService.deleteMovieByID(MovieID.newBuilder().setId(info.getId()).build(), booleanResponseStreamRecorder);
-        if (!booleanResponseStreamRecorder.awaitCompletion(10, TimeUnit.SECONDS)) {
+        StreamRecorder<BooleanResponse> deleteBoolean = StreamRecorder.create();
+        moviedbService.deleteMovieByID(MovieID.newBuilder().setId(info.getId()).build(), deleteBoolean);
+        if (!deleteBoolean.awaitCompletion(10, TimeUnit.SECONDS)) {
             throw new TimeoutException();
         }
-        assertNull(booleanResponseStreamRecorder.getError());
-        assertEquals(1, booleanResponseStreamRecorder.getValues().get(0).getIsTrue());
+        assertNull(deleteBoolean.getError());
+        assertEquals(1, deleteBoolean.getValues().get(0).getIsTrue());
         //Test no data in movie and info table
         assertNull(movieMapper.getNameByID(info.getId()));
         assertNull(infoMapper.getInfoByID(info.getId()));
@@ -259,8 +625,6 @@ public class MoviedbServiceTests {
         assertNull(objectListResponseStreamRecorder.getError());
         assertEquals(0, objectListResponseStreamRecorder.getValues().get(0).getReplyCount());
     }
-
-
 
 
 }

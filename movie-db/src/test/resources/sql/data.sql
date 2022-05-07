@@ -6,11 +6,13 @@ insert into Movie_lines(id,sentence,author,line_id) values ('testMovieId','testS
 insert into Movie_lines(id,sentence,author,line_id) values ('testMovieId','testSentence2','testAuthor2','testLine_id2');
 insert into Movie_user(username,password,fullname,roles)values('testUserName@test.com','testPassword','testFullname'
                         ,'testRoles');
-insert into user_comment(commentID,username,movieID,content) values('testCommentID','testUserName','12345','testContent');
-insert into user_comment(commentID,username,movieID,content) values('testCommentID2','testUserName2','12345','testContent2');
-insert into user_comment(commentID,username,movieID,content) values('testCommentID3','testUserName2','123456','testContent3');
+insert into user_comment(commentID,username,movieID,content) values('testCommentID','testUserName','testMovieId','testContent');
+insert into user_comment(commentID,username,movieID,content) values('testCommentID2','testUserName2','testMovieId','testContent2');
+insert into user_comment(commentID,username,movieID,content) values('testCommentID3','testUserName2','testMovieId2','testContent3');
 insert into user_like(username,id) values ('testUserName','testId');
 insert into user_like(username,id) values ('testUserName','testId2');
+insert into user_like(username,id) values ('favoriteMovieUserName','testId2');
+insert into user_like(username,id) values ('favoriteMovieUserName','testMovieId');
 
 
 

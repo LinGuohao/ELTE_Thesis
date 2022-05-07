@@ -1,4 +1,4 @@
-package com.guohaohome.moviedb.unitTest.sqlApiTest;
+package com.guohaohome.moviedb.unitTest.sqlAPITest;
 
 
 import com.guohaohome.moviedb.dao.CommentMapper;
@@ -28,7 +28,7 @@ public class CommentMapperTester {
 
     @Test
     public void testGetCommentByMovieID() {
-        List<Comment> commentList = commentMapper.getCommentByMovieID("12345");
+        List<Comment> commentList = commentMapper.getCommentByMovieID("testMovieId");
         assertEquals(2, commentList.size());
         assertEquals("testCommentID", commentList.get(0).getCommentID());
         assertEquals("testUserName", commentList.get(0).getUsername());
@@ -43,10 +43,10 @@ public class CommentMapperTester {
         List<Comment> commentList = commentMapper.getCommentByUserName("testUserName2");
         assertEquals(2, commentList.size());
         assertEquals("testCommentID2", commentList.get(0).getCommentID());
-        assertEquals("12345", commentList.get(0).getMovieID());
+        assertEquals("testMovieId", commentList.get(0).getMovieID());
         assertEquals("testContent2", commentList.get(0).getContent());
         assertEquals("testCommentID3", commentList.get(1).getCommentID());
-        assertEquals("123456", commentList.get(1).getMovieID());
+        assertEquals("testMovieId2", commentList.get(1).getMovieID());
         assertEquals("testContent3", commentList.get(1).getContent());
 
     }
@@ -55,7 +55,7 @@ public class CommentMapperTester {
     public void testGetCommentByCommentID() {
         Comment comment = commentMapper.getCommentByCommentID("testCommentID");
         assertEquals("testUserName", comment.getUsername());
-        assertEquals("12345", comment.getMovieID());
+        assertEquals("testMovieId", comment.getMovieID());
         assertEquals("testContent", comment.getContent());
     }
 

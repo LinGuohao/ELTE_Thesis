@@ -183,7 +183,8 @@ export default {
           new LineList()
             .setId(this.detailInfo[0])
             .setSentence(addSentence)
-            .setAuthor(this.author),
+            .setAuthor(this.author)
+            .setLineid("-1"),
           {},
           (err, response) => {
             if (response.array[0] == 1) {

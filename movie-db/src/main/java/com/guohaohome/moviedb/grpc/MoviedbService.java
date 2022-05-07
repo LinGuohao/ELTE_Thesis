@@ -187,7 +187,12 @@ public class MoviedbService extends MoviedbServiceGrpc.MoviedbServiceImplBase {
     public void insertLine(LineList request, StreamObserver<BooleanResponse> responseStreamObserver) {
         BooleanResponse.Builder builder = BooleanResponse.newBuilder();
         int oldLength = lineMapper.getLines(request.getId()).size();
-        Line line = new Line(request.getId(), request.getSentence(), request.getAuthor(), utils.generateId());
+        Line line;
+        if(request.getLineID().equals("-1") || request.getLineID().equals("")) {
+            line = new Line(request.getId(), request.getSentence(), request.getAuthor(), utils.generateId());
+        }else {
+            line = new Line(request.getId(), request.getSentence(), request.getAuthor(), request.getLineID());
+        }
         lineMapper.insertLine(line);
         int Length = lineMapper.getLines(request.getId()).size();
         if (oldLength + 1 == Length) {

@@ -8,8 +8,8 @@ import com.guohaohome.moviedb.ossClient.OSSConfiguration;
 import com.guohaohome.moviedb.proto.*;
 import com.guohaohome.moviedb.sqlEntity.*;
 import io.grpc.internal.testing.StreamRecorder;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,7 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -30,12 +30,11 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
+import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @MapperScan("com/guohaohome/moviedb/dao")
 @DirtiesContext
@@ -60,6 +59,7 @@ public class MoviedbServiceTests {
     private UserMapper userMapper;
 
     @Test
+    @DirtiesContext
     public void testGetAllID() throws Exception {
         StreamRecorder<AllMovieIDListResponse> responseObserver = StreamRecorder.create();
         moviedbService.getAllID(null, responseObserver);
@@ -76,6 +76,7 @@ public class MoviedbServiceTests {
     }
 
     @Test
+    @DirtiesContext
     public void testGetInfoByID() throws Exception {
         StreamRecorder<InfoResponse> responseObserver = StreamRecorder.create();
         moviedbService.getInfoByID(InfoByIDRequest.newBuilder().setId("testMovieId").build(), responseObserver);
@@ -93,6 +94,7 @@ public class MoviedbServiceTests {
 
 
     @Test
+    @DirtiesContext
     public void testUploadFileToOSSAndDeleteFileFromOSS() throws Exception {
         final ClassPathResource classPathResource = new ClassPathResource("testImage.txt");
         InputStream inputStream = classPathResource.getInputStream();
@@ -122,6 +124,7 @@ public class MoviedbServiceTests {
     }
 
     @Test
+    @DirtiesContext
     public void testUploadTextToOSS() throws Exception {
         TextUploadRequest textUploadRequest = TextUploadRequest.newBuilder().setContent("test:testUploadTextToOSS")
                 .setObjectName("test/test.json").build();
@@ -141,6 +144,7 @@ public class MoviedbServiceTests {
     }
 
     @Test
+    @DirtiesContext
     public void testGetOssObjectList() throws Exception {
         //Upload some files to the temporary test folder
         String ObjectPath = "test/";
@@ -183,6 +187,7 @@ public class MoviedbServiceTests {
     }
 
     @Test
+    @DirtiesContext
     public void testGetLines() throws Exception {
         StreamRecorder<LineListResponse> lineListResponseStreamRecorder = StreamRecorder.create();
         InfoByIDRequest infoByIDRequest = InfoByIDRequest.newBuilder().setId("testMovieId").build();
@@ -204,6 +209,7 @@ public class MoviedbServiceTests {
     }
 
     @Test
+    @DirtiesContext
     public void testInsertLineAndDeleteLine() throws Exception {
         //Insert
         //====================================
@@ -241,6 +247,7 @@ public class MoviedbServiceTests {
     }
 
     @Test
+    @DirtiesContext
     public void testGetMusicsAndMusicUploadMusicToOSS() throws Exception {
         //Upload two musics to test folder
         String ObjectPath = "test/OST/";
@@ -297,6 +304,7 @@ public class MoviedbServiceTests {
     }
 
     @Test
+    @DirtiesContext
     public void testJudgeUsername() throws Exception {
         StreamRecorder<BooleanResponse>booleanResponseStreamRecorder = StreamRecorder.create();
         UsernameRequest usernameRequest = UsernameRequest.newBuilder().setUsername("testUserName@test.com").build();
@@ -319,6 +327,7 @@ public class MoviedbServiceTests {
     }
 
     @Test
+    @DirtiesContext
     public void testInsertUser() throws Exception {
         UserInfo userInfo = UserInfo.newBuilder().setUsername("testInsertUser@test.com")
                 .setPassword("testInsertUserPassword")
@@ -347,6 +356,7 @@ public class MoviedbServiceTests {
         userMapper.deleteUserByUserName(userInfo.getUsername());
     }
     @Test
+    @DirtiesContext
     public void testGetUserByUserName() throws Exception {
         UsernameRequest usernameRequest = UsernameRequest.newBuilder().setUsername("testUserName@test.com").build();
         StreamRecorder<UserInfo>userInfoStreamRecorder = StreamRecorder.create();
@@ -363,6 +373,7 @@ public class MoviedbServiceTests {
     }
 
     @Test
+    @DirtiesContext
     public void testAuthenticateUser() throws Exception {
         //insert a user to test
         String password = "testPassword";
@@ -404,6 +415,7 @@ public class MoviedbServiceTests {
     }
 
     @Test
+    @DirtiesContext
     public void testGetCommentByMovieID() throws Exception {
         StreamRecorder<CommentListResponse> commentListResponseStreamRecorder = StreamRecorder.create();
         InfoByIDRequest infoByIDRequest = InfoByIDRequest.newBuilder().setId("testMovieId").build();
@@ -425,6 +437,7 @@ public class MoviedbServiceTests {
     }
 
     @Test
+    @DirtiesContext
     public void testGetCommentByUserName() throws Exception {
         InfoByIDRequest infoByIDRequest = InfoByIDRequest.newBuilder().setId("testUserName2").build();
         StreamRecorder<CommentListResponse> commentListResponseStreamRecorder = StreamRecorder.create();
@@ -446,6 +459,7 @@ public class MoviedbServiceTests {
     }
 
     @Test
+    @DirtiesContext
     public void testInsertCommentAndDeleteComment() throws Exception {
         //Insert
         CommentInfo commentInfo = CommentInfo.newBuilder().setCommentID("testInsertCommentAndDeleteCommentCommentID")
@@ -478,6 +492,7 @@ public class MoviedbServiceTests {
     }
 
     @Test
+    @DirtiesContext
     public void testInsertUserLikeAndDeleteUserLike() throws Exception {
         //Test Insert
         UserLikeInfo userLikeInfo = UserLikeInfo.newBuilder().setUsername("testInsertUserLikeAndDeleteUserLikeUserName")
@@ -515,6 +530,7 @@ public class MoviedbServiceTests {
     }
 
     @Test
+    @DirtiesContext
     public void testGetUserLikes() throws Exception {
         UsernameRequest usernameRequest = UsernameRequest.newBuilder().setUsername("testUserName").build();
         StreamRecorder<UserLikeListResponse>userLikeListResponseStreamRecorder = StreamRecorder.create();
@@ -533,6 +549,7 @@ public class MoviedbServiceTests {
 
 
     @Test
+    @DirtiesContext
     public void testGetFavoriteMovieList() throws Exception {
         UsernameRequest usernameRequest = UsernameRequest.newBuilder().setUsername("favoriteMovieUserName").build();
         StreamRecorder<InfoList>infoListStreamRecorder = StreamRecorder.create();
@@ -552,6 +569,7 @@ public class MoviedbServiceTests {
     }
 
     @Test
+    @DirtiesContext
     public void testInsertMovieAndDeleteMovieByID() throws Exception {
         //Test InsertMovie
         StreamRecorder<InfoResponse> responseObserver = StreamRecorder.create();

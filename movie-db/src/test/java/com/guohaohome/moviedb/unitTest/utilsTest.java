@@ -1,27 +1,28 @@
 package com.guohaohome.moviedb.unitTest;
 
 import com.guohaohome.moviedb.grpc.Utils;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.HashMap;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @ActiveProfiles("test")
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @DirtiesContext
 public class utilsTest {
     @Autowired
     Utils utils;
 
+    @DirtiesContext
     @Test
     public void SHA256EncryptionTest() {
         String plain = "SHA256EncryptionTestPlain";
@@ -29,7 +30,7 @@ public class utilsTest {
         String cipher2 = Utils.SHA256Encryption(plain);
         assertEquals(cipher, cipher2);
     }
-
+    @DirtiesContext
     @Test
     public void generateMusicInformationTest() {
         String musicPath = "12345/OST/Raindrops Keep Falling On My Head_B.J. Thomas.mp3";
@@ -39,7 +40,7 @@ public class utilsTest {
         assertEquals("B.J. Thomas", musicInfo[1]);
 
     }
-
+    @DirtiesContext
     @Test
     public void generateIdTest() {
         HashMap<String, Integer> hashMap = new HashMap<>();
@@ -49,7 +50,7 @@ public class utilsTest {
             hashMap.put(id, 1);
         }
     }
-
+    @DirtiesContext
     @Test
     public void generateMusicFileNameTest() {
         String musicName = "Raindrops Keep Falling On My Head";

@@ -9,7 +9,7 @@ Vue.config.productionTip = false;
 Vue.prototype.$axios = axios;
 if (process.env.VUE_APP_HOSTNAME != '') {
   let address = "http://" + process.env.VUE_APP_HOSTNAME + ":" + process.env.VUE_APP_PORT
-  Vue.prototype.$backend = new MoviedbServiceClient("http://" + address, null, null);
+  Vue.prototype.$backend = new MoviedbServiceClient(address, null, null);
   console.log(address);
 } else {
   let address = ""

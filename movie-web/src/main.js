@@ -8,9 +8,18 @@ import store from './store';
 Vue.config.productionTip = false;
 Vue.prototype.$axios = axios;
 if (process.env.VUE_APP_HOSTNAME != '') {
-  Vue.prototype.$backend = new MoviedbServiceClient("http://" + process.env.VUE_APP_HOSTNAME + ":"+process.env.VUE_APP_PORT, null, null);
+  let address = "http://" + process.env.VUE_APP_HOSTNAME + ":" + process.env.VUE_APP_PORT
+  Vue.prototype.$backend = new MoviedbServiceClient("http://" + address, null, null);
+  console.log(address);
 } else {
-  Vue.prototype.$backend = new MoviedbServiceClient("http://" + window.location.href.split("//")[1].split(":")[0] + ":"+process.env.VUE_APP_PORT, null, null);
+  let address = ""
+  if (process.env.NODE_ENV == 'development') {
+    address = "http://" + window.location.href.split("//")[1].split(":")[0] + ":" + process.env.VUE_APP_PORT
+  } else {
+    address = "http://" + window.location.href.split("//")[1].split("/")[0] + ":" + process.env.VUE_APP_PORT
+  }
+  Vue.prototype.$backend = new MoviedbServiceClient(address, null, null);
+  console.log(address);
 }
 Vue.prototype.$ossPrefix = "https://movie-db.oss-eu-west-1.aliyuncs.com/";
 let OSS = require('ali-oss')
